@@ -1,0 +1,38 @@
+.product-detail-page {
+  min-height: 100vh;
+  background: #020617;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.product-detail-card {
+  display: flex;
+  gap: 40px;
+  background: #0f172a;
+  padding: 30px;
+  border-radius: 20px;
+}
+
+.product-detail-card img {
+  width: 350px;
+  border-radius: 15px;
+}
+
+.details {
+  color: white;
+}
+
+.details h4 {
+  color: #38bdf8;
+}
+
+.details button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #f97316;
+  border: none;
+  border-radius: 20px;
+  color: white;
+  cursor: pointer;
+}

@@ -1,0 +1,223 @@
+.company-banner{
+    height:45vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#131d2d;
+    margin-top:90px;
+}
+
+.banner-text{
+    text-align:center;
+}
+
+.banner-text h1{
+    font-size:60px;
+    margin-bottom:15px;
+    color:white;
+}
+
+.banner-text p{
+    color:#d0d0d0;
+    font-size:20px;
+}
+
+/* ================= WHO WE ARE ================= */
+
+.who{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:60px;
+    padding:100px 80px;
+    background:#0b1220;
+}
+
+.who-image{
+    flex:1;
+}
+
+.who-image img{
+    width:100%;
+    height:500px;
+    object-fit:cover;
+    border-radius:20px;
+    box-shadow:0 20px 45px rgba(0,0,0,.45);
+    transition:.4s;
+}
+
+.who-image img:hover{
+    transform:scale(1.03);
+}
+
+.who-text{
+    flex:1;
+}
+
+.who-text span{
+    color:#ff6b00;
+    font-weight:bold;
+    letter-spacing:2px;
+}
+
+.who-text h2{
+    font-size:48px;
+    margin:20px 0;
+    color:white;
+    line-height:1.2;
+}
+
+.who-text p{
+    color:#cfcfcf;
+    line-height:1.9;
+    font-size:18px;
+    margin-bottom:20px;
+}
+
+/* ================= MISSION ================= */
+
+.mission{
+    padding:90px 80px;
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:30px;
+    background:#111827;
+}
+
+.mission-card{
+    background:#1b2334;
+    padding:40px;
+    border-radius:15px;
+    transition:.3s;
+}
+
+.mission-card:hover{
+    background:#ff6b00;
+    transform:translateY(-8px);
+}
+
+.mission-card h2{
+    color:white;
+    margin-bottom:20px;
+    font-size:32px;
+}
+
+.mission-card p{
+    color:#ececec;
+    line-height:1.8;
+}
+
+/* ================= VALUES ================= */
+
+.values{
+    padding:100px 80px;
+    background:#0b1220;
+    text-align:center;
+}
+
+.values h2{
+    color:white;
+    font-size:45px;
+    margin-bottom:50px;
+}
+
+.values-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:25px;
+}
+
+.value-card{
+    background:#1b2334;
+    padding:45px;
+    border-radius:15px;
+    transition:.3s;
+}
+
+.value-card:hover{
+    background:#ff6b00;
+    transform:translateY(-8px);
+}
+
+.value-card h3{
+    color:white;
+    font-size:24px;
+}
+
+/* ================= PROCESS ================= */
+
+.process{
+    padding:100px 80px;
+    background:#111827;
+    text-align:center;
+}
+
+.process h2{
+    color:white;
+    font-size:45px;
+    margin-bottom:50px;
+}
+
+.timeline{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:20px;
+}
+
+.timeline div{
+    background:#1b2334;
+    color:white;
+    padding:30px;
+    border-radius:12px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.timeline div:hover{
+    background:#ff6b00;
+    transform:translateY(-5px);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:992px){
+
+    .who{
+        flex-direction:column;
+        padding:80px 30px;
+    }
+
+    .mission{
+        grid-template-columns:1fr;
+        padding:80px 30px;
+    }
+
+    .values-grid{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .timeline{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+}
+
+@media(max-width:768px){
+
+    .banner-text h1{
+        font-size:42px;
+    }
+
+    .who-text h2{
+        font-size:36px;
+    }
+
+    .values-grid{
+        grid-template-columns:1fr;
+    }
+
+    .timeline{
+        grid-template-columns:1fr;
+    }
+
+}

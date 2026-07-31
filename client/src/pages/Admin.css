@@ -1,0 +1,87 @@
+.admin-page{
+    margin-top:90px;
+    padding:80px;
+    background:#0b1220;
+    min-height:100vh;
+}
+
+.admin-page h1{
+    color:white;
+    font-size:50px;
+    text-align:center;
+}
+
+.admin-page p{
+    text-align:center;
+    color:#cfcfcf;
+    margin:15px 0 60px;
+}
+
+.admin-container{
+    display:grid;
+    grid-template-columns:1fr 1.4fr;
+    gap:40px;
+}
+
+.product-form,
+.product-list{
+    background:#1b2334;
+    padding:35px;
+    border-radius:15px;
+}
+
+.product-form h2,
+.product-list h2{
+    color:white;
+    margin-bottom:25px;
+}
+
+.product-form input,
+.product-form textarea{
+    width:100%;
+    padding:14px;
+    margin-bottom:18px;
+    background:#111827;
+    border:none;
+    border-radius:8px;
+    color:white;
+    font-size:15px;
+}
+
+.product-form button{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:8px;
+    background:#ff6b00;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.product-form button:hover{
+    background:#ff8126;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+th{
+    background:#ff6b00;
+    color:white;
+    padding:15px;
+}
+
+td{
+    padding:15px;
+    color:white;
+    text-align:center;
+    border-bottom:1px solid #333;
+}
+
+tr:hover{
+    background:#111827;
+}
