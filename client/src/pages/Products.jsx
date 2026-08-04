@@ -1,5 +1,5 @@
 import React from "react";
-import "./products.css";
+import "./Products.css";
 import { Link } from "react-router-dom"; // ✅ ADD THIS
 
 // images import
