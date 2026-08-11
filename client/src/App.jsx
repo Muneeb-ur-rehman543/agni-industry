@@ -10,18 +10,18 @@ import Gallery from "./pages/Gallery";
 import Admin from "./pages/Admin";
 import Products from "./pages/Products";
 import Contact from "./pages/Contact";
-import Cart from "./pages/Cart"; // ✅ NEW
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
 
 // Context
-import CartProvider from "./context/CartContext"; // ✅ NEW
+import CartProvider from "./context/CartContext";
 
 // Product Detail
 import ProductDetail from "./components/ProductDetail";
 
 function App() {
   return (
-    <CartProvider> {/* ✅ WRAP WHOLE APP */}
-
+    <CartProvider>
       <BrowserRouter>
 
         {/* Navbar always visible */}
@@ -39,13 +39,14 @@ function App() {
           {/* Product Detail */}
           <Route path="/product/:id" element={<ProductDetail />} />
 
-          {/* ✅ CART ROUTE */}
+          {/* Cart */}
           <Route path="/cart" element={<Cart />} />
 
+          {/* Checkout */}
+          <Route path="/checkout" element={<Checkout />} />
         </Routes>
 
       </BrowserRouter>
-
     </CartProvider>
   );
 }

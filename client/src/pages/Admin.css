@@ -1,87 +1,210 @@
-.admin-page{
-    margin-top:90px;
-    padding:80px;
-    background:#0b1220;
-    min-height:100vh;
+.admin-page {
+  margin-top: 90px;
+  padding: 80px;
+  background: #0b1220;
+  min-height: 100vh;
 }
 
-.admin-page h1{
-    color:white;
-    font-size:50px;
-    text-align:center;
+.admin-page h1 {
+  color: white;
+  font-size: 50px;
+  text-align: center;
 }
 
-.admin-page p{
-    text-align:center;
-    color:#cfcfcf;
-    margin:15px 0 60px;
+.admin-page p {
+  text-align: center;
+  color: #cfcfcf;
+  margin: 15px 0 60px;
 }
 
-.admin-container{
-    display:grid;
-    grid-template-columns:1fr 1.4fr;
-    gap:40px;
+/* =========================
+   ADMIN CONTAINER
+========================= */
+
+.admin-container {
+  display: grid;
+  grid-template-columns: 380px minmax(0, 1fr);
+  gap: 40px;
+  width: 90%;
+  max-width: 1200px;
+  margin: 40px auto;
+  align-items: start;
 }
+
+/* =========================
+   CARDS
+========================= */
 
 .product-form,
-.product-list{
-    background:#1b2334;
-    padding:35px;
-    border-radius:15px;
+.product-list {
+  background: #1b2334;
+  padding: 35px;
+  border-radius: 15px;
+  box-sizing: border-box;
 }
 
 .product-form h2,
-.product-list h2{
-    color:white;
-    margin-bottom:25px;
+.product-list h2 {
+  color: white;
+  margin-bottom: 25px;
 }
+
+/* =========================
+   PRODUCT FORM
+========================= */
 
 .product-form input,
-.product-form textarea{
-    width:100%;
-    padding:14px;
-    margin-bottom:18px;
-    background:#111827;
-    border:none;
-    border-radius:8px;
-    color:white;
-    font-size:15px;
+.product-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px;
+  margin-bottom: 18px;
+  background: #111827;
+  border: none;
+  border-radius: 8px;
+  color: white;
+  font-size: 15px;
 }
 
-.product-form button{
-    width:100%;
-    padding:15px;
-    border:none;
-    border-radius:8px;
-    background:#ff6b00;
-    color:white;
-    font-size:16px;
-    cursor:pointer;
-    font-weight:bold;
+.product-form input::placeholder,
+.product-form textarea::placeholder {
+  color: #7f8aa3;
 }
 
-.product-form button:hover{
-    background:#ff8126;
+.product-form input[type="file"] {
+  cursor: pointer;
 }
 
-table{
-    width:100%;
-    border-collapse:collapse;
+.product-form button {
+  width: 100%;
+  padding: 15px;
+  border: none;
+  border-radius: 8px;
+  background: #ff6b00;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  font-weight: bold;
 }
 
-th{
-    background:#ff6b00;
-    color:white;
-    padding:15px;
+.product-form button:hover {
+  background: #ff8126;
 }
 
-td{
-    padding:15px;
-    color:white;
-    text-align:center;
-    border-bottom:1px solid #333;
+/* =========================
+   ORDERS TABLE
+========================= */
+
+.orders-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
 }
 
-tr:hover{
-    background:#111827;
+.orders-table-wrapper table {
+  width: 100%;
+  min-width: 1000px;
+  border-collapse: collapse;
+}
+
+.orders-table-wrapper th {
+  background: #ff6b00;
+  color: white;
+  padding: 15px;
+  white-space: nowrap;
+}
+
+.orders-table-wrapper td {
+  padding: 15px 10px;
+  color: white;
+  text-align: center;
+  border-bottom: 1px solid #333;
+  vertical-align: middle;
+}
+
+.orders-table-wrapper tr:hover {
+  background: #111827;
+}
+
+.orders-table-wrapper small {
+  color: #b8c0d0;
+}
+
+/* =========================
+   STATUS DROPDOWN
+========================= */
+
+.orders-table-wrapper select {
+  background: #0f172a;
+  color: white;
+  border: 1px solid #475569;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.orders-table-wrapper select:focus {
+  outline: none;
+  border-color: #ff6b00;
+}
+
+/* =========================
+   DELETE BUTTON
+========================= */
+
+.delete-order-btn {
+  background: #ef4444;
+  color: white;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.delete-order-btn:hover {
+  background: #dc2626;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 900px) {
+  .admin-page {
+    padding: 60px 20px;
+  }
+
+  .admin-page h1 {
+    font-size: 40px;
+  }
+
+  .admin-container {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+
+  .product-form,
+  .product-list {
+    width: 100%;
+  }
+}
+
+@media (max-width: 600px) {
+  .admin-page {
+    padding: 50px 15px;
+  }
+
+  .admin-page h1 {
+    font-size: 32px;
+  }
+
+  .admin-page p {
+    margin-bottom: 35px;
+  }
+
+  .product-form,
+  .product-list {
+    padding: 20px;
+  }
 }
