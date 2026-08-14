@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import "./Hero.css";
 import hero from "../assets/images/hero.jpg";
 
 function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section className="hero">
 
@@ -29,11 +32,19 @@ function Hero() {
 
         <div className="buttons">
 
-          <button className="orange">
+          {/* Explore More → Products */}
+          <button
+            className="orange"
+            onClick={() => navigate("/products")}
+          >
             Explore More
           </button>
 
-          <button className="white">
+          {/* Contact Us → Contact Page */}
+          <button
+            className="white"
+            onClick={() => navigate("/contact")}
+          >
             Contact Us
           </button>
 
@@ -43,7 +54,10 @@ function Hero() {
 
       <div className="hero-right">
 
-        <img src={hero} alt="AGNI Sportswear Factory" />
+        <img
+          src={hero}
+          alt="AGNI Sportswear Factory"
+        />
 
       </div>
 
