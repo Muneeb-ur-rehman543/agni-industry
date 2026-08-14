@@ -5,6 +5,11 @@ function Admin() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Railway Backend URL
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://agni-industry-production.up.railway.app";
+
   // Product form states
   const [productName, setProductName] = useState("");
   const [category, setCategory] = useState("");
@@ -17,11 +22,15 @@ function Admin() {
   // ===============================
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/orders");
+      setLoading(true);
+
+      const response = await fetch(`${API_URL}/api/orders`);
       const data = await response.json();
 
       if (data.success) {
-        setOrders(data.orders);
+        setOrders(data.orders || []);
+      } else {
+        console.error("Failed to fetch orders:", data.message);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -46,7 +55,7 @@ function Admin() {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/products", {
+      const response = await fetch(`${API_URL}/api/products`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -86,7 +95,7 @@ function Admin() {
   const updateStatus = async (orderId, newStatus) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/orders/${orderId}/status`,
+        `${API_URL}/api/orders/${orderId}/status`,
         {
           method: "PUT",
           headers: {
@@ -104,12 +113,15 @@ function Admin() {
         setOrders((currentOrders) =>
           currentOrders.map((order) =>
             order._id === orderId
-              ? { ...order, status: newStatus }
+              ? {
+                  ...order,
+                  status: newStatus,
+                }
               : order
           )
         );
       } else {
-        alert("Failed to update status.");
+        alert(data.message || "Failed to update status.");
       }
     } catch (error) {
       console.error("Status update error:", error);
@@ -129,7 +141,7 @@ function Admin() {
 
     try {
       const response = await fetch(
-        `http://localhost:5000/api/orders/${orderId}`,
+        `${API_URL}/api/orders/${orderId}`,
         {
           method: "DELETE",
         }
@@ -139,10 +151,14 @@ function Admin() {
 
       if (data.success) {
         setOrders((currentOrders) =>
-          currentOrders.filter((order) => order._id !== orderId)
+          currentOrders.filter(
+            (order) => order._id !== orderId
+          )
         );
+
+        alert("Order deleted successfully.");
       } else {
-        alert("Failed to delete order.");
+        alert(data.message || "Failed to delete order.");
       }
     } catch (error) {
       console.error("Delete order error:", error);
@@ -169,35 +185,45 @@ function Admin() {
               type="text"
               placeholder="Product Name"
               value={productName}
-              onChange={(e) => setProductName(e.target.value)}
+              onChange={(e) =>
+                setProductName(e.target.value)
+              }
             />
 
             <input
               type="text"
               placeholder="Category"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) =>
+                setCategory(e.target.value)
+              }
             />
 
             <input
               type="number"
               placeholder="Price"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e) =>
+                setPrice(e.target.value)
+              }
             />
 
             <input
               type="text"
               placeholder="Image URL (optional)"
               value={image}
-              onChange={(e) => setImage(e.target.value)}
+              onChange={(e) =>
+                setImage(e.target.value)
+              }
             />
 
             <textarea
               placeholder="Product Description"
               rows="5"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
+              onChange={(e) =>
+                setDescription(e.target.value)
+              }
             ></textarea>
 
             <button type="submit">
@@ -219,6 +245,7 @@ function Admin() {
             <p>No orders placed yet.</p>
           ) : (
             <div className="orders-table-wrapper">
+
               <table>
                 <thead>
                   <tr>
@@ -237,37 +264,64 @@ function Admin() {
                   {orders.map((order) => (
                     <tr key={order._id}>
 
+                      {/* CUSTOMER */}
                       <td>
-                        <strong>{order.customerName}</strong>
+                        <strong>
+                          {order.customerName}
+                        </strong>
+
                         <br />
-                        <small>{order.email}</small>
+
+                        <small>
+                          {order.email}
+                        </small>
                       </td>
 
+                      {/* PRODUCTS */}
                       <td>
-                        {order.items.map((item, index) => (
-                          <div key={index}>
-                            {item.name} × {item.quantity || 1}
-                          </div>
-                        ))}
+                        {order.items?.map(
+                          (item, index) => (
+                            <div key={index}>
+                              {item.name} ×{" "}
+                              {item.quantity || 1}
+                            </div>
+                          )
+                        )}
                       </td>
 
+                      {/* TOTAL */}
                       <td>
-                        ${Number(order.total).toFixed(2)}
+                        $
+                        {Number(
+                          order.total || 0
+                        ).toFixed(2)}
                       </td>
 
-                      <td>{order.phone}</td>
-
-                      <td>{order.address}</td>
-
+                      {/* PHONE */}
                       <td>
-                        {new Date(
-                          order.createdAt
-                        ).toLocaleDateString()}
+                        {order.phone}
                       </td>
 
+                      {/* ADDRESS */}
+                      <td>
+                        {order.address}
+                      </td>
+
+                      {/* DATE */}
+                      <td>
+                        {order.createdAt
+                          ? new Date(
+                              order.createdAt
+                            ).toLocaleDateString()
+                          : "N/A"}
+                      </td>
+
+                      {/* STATUS */}
                       <td>
                         <select
-                          value={order.status}
+                          value={
+                            order.status || "Pending"
+                          }
                           onChange={(e) =>
                             updateStatus(
                               order._id,
@@ -278,23 +332,29 @@ function Admin() {
                           <option value="Pending">
                             Pending
                           </option>
+
                           <option value="Processing">
                             Processing
                           </option>
+
                           <option value="Shipped">
                             Shipped
                           </option>
+
                           <option value="Delivered">
                             Delivered
                           </option>
                         </select>
                       </td>
 
+                      {/* DELETE */}
                       <td>
                         <button
                           className="delete-order-btn"
                           onClick={() =>
-                            deleteOrder(order._id)
+                            deleteOrder(
+                              order._id
+                            )
                           }
                         >
                           Delete
@@ -305,8 +365,10 @@ function Admin() {
                   ))}
                 </tbody>
               </table>
+
             </div>
           )}
+
         </div>
 
       </div>
