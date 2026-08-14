@@ -28,6 +28,11 @@ function Checkout() {
     0
   );
 
+  // Railway backend URL
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://agni-industry-production.up.railway.app";
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -87,7 +92,11 @@ function Checkout() {
     // Name validation
     if (!formData.customerName.trim()) {
       newErrors.customerName = "Full name is required.";
-    } else if (!/^[A-Za-z]+(?:\s+[A-Za-z]+)*$/.test(formData.customerName.trim())) {
+    } else if (
+      !/^[A-Za-z]+(?:\s+[A-Za-z]+)*$/.test(
+        formData.customerName.trim()
+      )
+    ) {
       newErrors.customerName =
         "Invalid name. Please use letters only.";
     }
@@ -126,7 +135,6 @@ function Checkout() {
       return;
     }
 
-    // Stop submission if form is invalid
     if (!validateForm()) {
       return;
     }
@@ -140,7 +148,7 @@ function Checkout() {
         total,
       };
 
-      const response = await fetch("http://localhost:5000/api/orders", {
+      const response = await fetch(`${API_URL}/api/orders`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -148,7 +156,25 @@ function Checkout() {
         body: JSON.stringify(orderData),
       });
 
-      const data = await response.json();
+      let data;
+
+      try {
+        data = await response.json();
+      } catch {
+        data = {};
+      }
+
+      if (!response.ok) {
+        console.error("Server Response:", data);
+
+        alert(
+          data.message ||
+            data.error ||
+            "Unable to place order. Please try again."
+        );
+
+        return;
+      }
 
       if (data.success) {
         alert("Order placed successfully! 🎉");
@@ -156,11 +182,14 @@ function Checkout() {
         clearCart();
         navigate("/");
       } else {
-        alert("Failed to place order.");
+        alert(data.message || "Failed to place order.");
       }
     } catch (error) {
       console.error("Checkout Error:", error);
-      alert("Server error. Please try again.");
+
+      alert(
+        "Unable to connect to the server. Please try again later."
+      );
     } finally {
       setLoading(false);
     }
@@ -486,6 +515,7 @@ function Checkout() {
 
             <div className="feature">
               <span>🚚</span>
+
               <div>
                 <h3>Fast Delivery</h3>
                 <p>Get your products quickly</p>
@@ -494,6 +524,7 @@ function Checkout() {
 
             <div className="feature">
               <span>🛡</span>
+
               <div>
                 <h3>Secure Payment</h3>
                 <p>100% secure transactions</p>
@@ -502,6 +533,7 @@ function Checkout() {
 
             <div className="feature">
               <span>🎧</span>
+
               <div>
                 <h3>24/7 Support</h3>
                 <p>We're here to help</p>
@@ -510,6 +542,7 @@ function Checkout() {
 
             <div className="feature">
               <span>↩</span>
+
               <div>
                 <h3>Easy Returns</h3>
                 <p>Hassle-free returns</p>
