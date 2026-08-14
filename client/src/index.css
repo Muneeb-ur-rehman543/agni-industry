@@ -1,193 +1,46 @@
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial, Helvetica, sans-serif;
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-body{
-background:#0b0f19;
-color:white;
+html {
+  width: 100%;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
 }
 
-/* Navbar */
-
-.navbar{
-
-position:fixed;
-
-top:0;
-
-left:0;
-
-width:100%;
-
-display:flex;
-
-justify-content:space-between;
-
-align-items:center;
-
-padding:25px 80px;
-
-background:rgba(0,0,0,.45);
-
-backdrop-filter:blur(12px);
-
-z-index:1000;
-
+body {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  background: #0b0f19;
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
-.logo{
-
-font-size:34px;
-
-font-weight:bold;
-
-color:#ff6b00;
-
+img {
+  max-width: 100%;
+  height: auto;
 }
 
-.nav-menu{
-
-display:flex;
-
-gap:40px;
-
-list-style:none;
-
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
 }
 
-.nav-menu a{
-
-color:white;
-
-text-decoration:none;
-
-font-size:17px;
-
-transition:.3s;
-
+button {
+  cursor: pointer;
 }
 
-.nav-menu a:hover{
-
-color:#ff6b00;
-
+a {
+  text-decoration: none;
 }
 
-.quote-btn{
-
-background:#ff6b00;
-
-border:none;
-
-color:white;
-
-padding:14px 28px;
-
-border-radius:40px;
-
-cursor:pointer;
-
-font-size:16px;
-
-}
-
-/* Hero */
-
-.hero{
-
-height:100vh;
-
-display:flex;
-
-align-items:center;
-
-padding:100px;
-
-background:linear-gradient(135deg,#0b0f19,#111827);
-
-position:relative;
-
-}
-
-.overlay{
-
-position:absolute;
-
-inset:0;
-
-background:rgba(0,0,0,.25);
-
-}
-
-.hero-content{
-
-position:relative;
-
-z-index:2;
-
-max-width:700px;
-
-}
-
-.hero-subtitle{
-
-color:#ff6b00;
-
-letter-spacing:4px;
-
-margin-bottom:20px;
-
-font-weight:bold;
-
-}
-
-.hero h1{
-
-font-size:75px;
-
-line-height:1.1;
-
-margin-bottom:30px;
-
-}
-
-.hero p{
-
-font-size:18px;
-
-color:#cbd5e1;
-
-line-height:1.8;
-
-margin-bottom:35px;
-
-}
-
-.hero button{
-
-background:#ff6b00;
-
-border:none;
-
-padding:16px 35px;
-
-color:white;
-
-border-radius:50px;
-
-font-size:16px;
-
-cursor:pointer;
-
-transition:.3s;
-
-}
-
-.hero button:hover{
-
-background:#ff8c42;
-
+#root {
+  width: 100%;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
