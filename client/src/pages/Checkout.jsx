@@ -24,14 +24,13 @@ function Checkout() {
   const [loading, setLoading] = useState(false);
 
   const total = cart.reduce(
-    (sum, item) => sum + Number(item.price) * (item.quantity || 1),
+    (sum, item) =>
+      sum + Number(item.price) * (item.quantity || 1),
     0
   );
 
-  // Railway backend URL
-  const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "https://agni-industry-production.up.railway.app";
+  // LOCAL BACKEND
+  const API_URL = "http://localhost:5000";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -45,7 +44,8 @@ function Checkout() {
       if (value !== newValue) {
         setErrors((prev) => ({
           ...prev,
-          customerName: "Invalid name. Please use letters only.",
+          customerName:
+            "Invalid name. Please use letters only.",
         }));
       } else if (newValue.trim() !== "") {
         setErrors((prev) => ({
@@ -55,7 +55,7 @@ function Checkout() {
       }
     }
 
-    // PHONE: only numbers, spaces, +, -, brackets
+    // PHONE: numbers, spaces, +, -, brackets
     if (name === "phone") {
       newValue = value.replace(/[^0-9+\-\s()]/g, "");
 
@@ -77,7 +77,7 @@ function Checkout() {
       [name]: newValue,
     }));
 
-    // Clear other field errors when user starts correcting them
+    // Clear other field errors
     if (name !== "customerName" && name !== "phone") {
       setErrors((prev) => ({
         ...prev,
@@ -105,21 +105,30 @@ function Checkout() {
     if (!formData.email.trim()) {
       newErrors.email = "Email address is required.";
     } else if (
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+        formData.email.trim()
+      )
     ) {
-      newErrors.email = "Please enter a valid email address.";
+      newErrors.email =
+        "Please enter a valid email address.";
     }
 
     // Phone validation
     if (!formData.phone.trim()) {
       newErrors.phone = "Phone number is required.";
-    } else if (!/^[0-9+\-\s()]{7,20}$/.test(formData.phone.trim())) {
-      newErrors.phone = "Please enter a valid phone number.";
+    } else if (
+      !/^[0-9+\-\s()]{7,20}$/.test(
+        formData.phone.trim()
+      )
+    ) {
+      newErrors.phone =
+        "Please enter a valid phone number.";
     }
 
     // Address validation
     if (!formData.address.trim()) {
-      newErrors.address = "Delivery address is required.";
+      newErrors.address =
+        "Delivery address is required.";
     }
 
     setErrors(newErrors);
@@ -143,20 +152,29 @@ function Checkout() {
       setLoading(true);
 
       const orderData = {
-        ...formData,
+        customerName: formData.customerName.trim(),
+        email: formData.email.trim(),
+        phone: formData.phone.trim(),
+        address: formData.address.trim(),
         items: cart,
         total,
       };
 
-      const response = await fetch(`${API_URL}/api/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(orderData),
-      });
+      console.log("Sending order:", orderData);
+      console.log("Backend URL:", API_URL);
 
-      let data;
+      const response = await fetch(
+        `${API_URL}/api/orders`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(orderData),
+        }
+      );
+
+      let data = {};
 
       try {
         data = await response.json();
@@ -164,15 +182,14 @@ function Checkout() {
         data = {};
       }
 
-      if (!response.ok) {
-        console.error("Server Response:", data);
+      console.log("Server Response:", data);
 
+      if (!response.ok) {
         alert(
           data.message ||
             data.error ||
             "Unable to place order. Please try again."
         );
-
         return;
       }
 
@@ -180,15 +197,18 @@ function Checkout() {
         alert("Order placed successfully! 🎉");
 
         clearCart();
-        navigate("/");
+        navigate("/admin");
       } else {
-        alert(data.message || "Failed to place order.");
+        alert(
+          data.message ||
+            "Failed to place order."
+        );
       }
     } catch (error) {
       console.error("Checkout Error:", error);
 
       alert(
-        "Unable to connect to the server. Please try again later."
+        "Unable to connect to the server. Please make sure the backend is running on http://localhost:5000"
       );
     } finally {
       setLoading(false);
@@ -199,15 +219,20 @@ function Checkout() {
     <div className="checkout-page">
       <div className="checkout-container">
 
-        {/* Page Heading */}
         <div className="checkout-heading">
           <h1>Checkout</h1>
 
           <div className="breadcrumb">
-            <span onClick={() => navigate("/")}>Home</span>
+            <span onClick={() => navigate("/")}>
+              Home
+            </span>
             <b>›</b>
-            <span onClick={() => navigate("/cart")}>Cart</span>
+
+            <span onClick={() => navigate("/cart")}>
+              Cart
+            </span>
             <b>›</b>
+
             <strong>Checkout</strong>
           </div>
         </div>
@@ -219,7 +244,8 @@ function Checkout() {
             <h2>Your Cart is Empty</h2>
 
             <p>
-              Add some products before proceeding to checkout.
+              Add some products before proceeding to
+              checkout.
             </p>
 
             <button
@@ -238,12 +264,16 @@ function Checkout() {
               <div className="checkout-card">
 
                 <div className="card-heading">
-                  <div className="heading-icon">👤</div>
+                  <div className="heading-icon">
+                    👤
+                  </div>
 
                   <div>
                     <h2>Shipping Information</h2>
+
                     <p>
-                      Please enter your details to place your order
+                      Please enter your details to
+                      place your order
                     </p>
                   </div>
                 </div>
@@ -261,7 +291,9 @@ function Checkout() {
 
                       <div
                         className={`input-wrapper ${
-                          errors.customerName ? "input-error" : ""
+                          errors.customerName
+                            ? "input-error"
+                            : ""
                         }`}
                       >
                         <span>👤</span>
@@ -291,7 +323,9 @@ function Checkout() {
 
                       <div
                         className={`input-wrapper ${
-                          errors.email ? "input-error" : ""
+                          errors.email
+                            ? "input-error"
+                            : ""
                         }`}
                       >
                         <span>✉</span>
@@ -312,7 +346,6 @@ function Checkout() {
                         </p>
                       )}
                     </div>
-
                   </div>
 
                   {/* PHONE */}
@@ -323,7 +356,9 @@ function Checkout() {
 
                     <div
                       className={`input-wrapper ${
-                        errors.phone ? "input-error" : ""
+                        errors.phone
+                          ? "input-error"
+                          : ""
                       }`}
                     >
                       <span>☎</span>
@@ -353,7 +388,9 @@ function Checkout() {
 
                     <div
                       className={`textarea-wrapper ${
-                        errors.address ? "input-error" : ""
+                        errors.address
+                          ? "input-error"
+                          : ""
                       }`}
                     >
                       <span>📍</span>
@@ -391,14 +428,18 @@ function Checkout() {
 
               {/* SECURITY BOX */}
               <div className="security-box">
-                <div className="security-icon">🛡</div>
+                <div className="security-icon">
+                  🛡
+                </div>
 
                 <div>
-                  <h3>Your security is our priority</h3>
+                  <h3>
+                    Your security is our priority
+                  </h3>
 
                   <p>
-                    Your information is safe and secure with us.
-                    We never share your details.
+                    Your information is safe and secure
+                    with us. We never share your details.
                   </p>
                 </div>
               </div>
@@ -411,14 +452,17 @@ function Checkout() {
               <div className="order-card">
 
                 <div className="card-heading">
-                  <div className="heading-icon">🛍</div>
+                  <div className="heading-icon">
+                    🛍
+                  </div>
 
                   <div>
                     <h2>Order Summary</h2>
 
                     <p>
                       {cart.length} item
-                      {cart.length > 1 ? "s" : ""} in your cart
+                      {cart.length > 1 ? "s" : ""}
+                      {" "}in your cart
                     </p>
                   </div>
                 </div>
@@ -452,7 +496,9 @@ function Checkout() {
                         <h3>{item.name}</h3>
 
                         <p>
-                          ${Number(item.price).toFixed(2)} ×{" "}
+                          $
+                          {Number(item.price).toFixed(2)}
+                          {" × "}
                           {item.quantity || 1}
                         </p>
                       </div>
@@ -475,35 +521,45 @@ function Checkout() {
 
                   <div>
                     <span>Subtotal</span>
-                    <strong>${total.toFixed(2)}</strong>
+                    <strong>
+                      ${total.toFixed(2)}
+                    </strong>
                   </div>
 
                   <div>
                     <span>Shipping</span>
-                    <strong className="free">Free</strong>
+                    <strong className="free">
+                      Free
+                    </strong>
                   </div>
 
                   <div className="total-row">
                     <span>Total</span>
-                    <strong>${total.toFixed(2)}</strong>
+                    <strong>
+                      ${total.toFixed(2)}
+                    </strong>
                   </div>
 
                 </div>
 
                 {/* SECURE CHECKOUT */}
                 <div className="secure-checkout">
-                  <div className="secure-icon">🛡</div>
+                  <div className="secure-icon">
+                    🛡
+                  </div>
 
                   <div>
                     <h3>Secure Checkout</h3>
 
                     <p>
-                      Your information is protected and secure.
+                      Your information is protected
+                      and secure.
                     </p>
                   </div>
                 </div>
 
               </div>
+
             </div>
 
           </div>
@@ -518,7 +574,9 @@ function Checkout() {
 
               <div>
                 <h3>Fast Delivery</h3>
-                <p>Get your products quickly</p>
+                <p>
+                  Get your products quickly
+                </p>
               </div>
             </div>
 
@@ -527,7 +585,9 @@ function Checkout() {
 
               <div>
                 <h3>Secure Payment</h3>
-                <p>100% secure transactions</p>
+                <p>
+                  100% secure transactions
+                </p>
               </div>
             </div>
 
@@ -536,7 +596,9 @@ function Checkout() {
 
               <div>
                 <h3>24/7 Support</h3>
-                <p>We're here to help</p>
+                <p>
+                  We're here to help
+                </p>
               </div>
             </div>
 
@@ -545,7 +607,9 @@ function Checkout() {
 
               <div>
                 <h3>Easy Returns</h3>
-                <p>Hassle-free returns</p>
+                <p>
+                  Hassle-free returns
+                </p>
               </div>
             </div>
 
