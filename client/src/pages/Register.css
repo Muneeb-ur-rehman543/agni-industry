@@ -1,0 +1,368 @@
+/* ========================================
+   REGISTER PAGE
+======================================== */
+
+.auth-page {
+  width: 100%;
+  min-height: 100vh;
+
+  box-sizing: border-box;
+
+  /* Navbar = 90px
+     Extra gap = 80px */
+  padding-top: 170px;
+  padding-bottom: 60px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+
+  background: linear-gradient(
+    135deg,
+    #020617 0%,
+    #0f172a 50%,
+    #111827 100%
+  );
+}
+
+
+/* ========================================
+   REGISTER CARD
+======================================== */
+
+.auth-box {
+  width: 100%;
+  max-width: 460px;
+
+  padding: 35px 38px;
+
+  box-sizing: border-box;
+
+  border-radius: 18px;
+
+  background: rgba(15, 23, 42, 0.98);
+
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  box-shadow:
+    0 20px 50px rgba(0, 0, 0, 0.45),
+    0 0 30px rgba(255, 107, 0, 0.05);
+}
+
+
+/* ========================================
+   TITLE
+======================================== */
+
+.auth-box h2 {
+  margin: 0;
+
+  text-align: center;
+
+  color: #ffffff;
+
+  font-size: 30px;
+  font-weight: 700;
+}
+
+
+/* ========================================
+   SUBTITLE
+======================================== */
+
+.auth-subtitle {
+  margin: 8px 0 28px;
+
+  text-align: center;
+
+  color: #94a3b8;
+
+  font-size: 14px;
+}
+
+
+/* ========================================
+   MESSAGE
+======================================== */
+
+.auth-message {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  padding: 11px 14px;
+
+  margin-bottom: 18px;
+
+  border-radius: 8px;
+
+  background: rgba(255, 107, 0, 0.1);
+
+  border: 1px solid rgba(255, 107, 0, 0.3);
+
+  color: #ff9d5c;
+
+  font-size: 14px;
+
+  text-align: center;
+}
+
+
+/* ========================================
+   FORM GROUP
+======================================== */
+
+.form-group {
+  margin-bottom: 18px;
+}
+
+
+/* ========================================
+   LABEL
+======================================== */
+
+.form-group label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  color: #e2e8f0;
+
+  font-size: 14px;
+  font-weight: 600;
+}
+
+
+/* ========================================
+   INPUT
+======================================== */
+
+.form-group input {
+  width: 100%;
+  height: 48px;
+
+  padding: 0 14px;
+
+  box-sizing: border-box;
+
+  background: #020617;
+
+  border: 1px solid #334155;
+
+  border-radius: 9px;
+
+  outline: none;
+
+  color: #ffffff;
+
+  font-size: 15px;
+
+  transition: all 0.2s ease;
+}
+
+
+.form-group input::placeholder {
+  color: #64748b;
+}
+
+
+.form-group input:hover {
+  border-color: #475569;
+}
+
+
+.form-group input:focus {
+  border-color: #ff6b00;
+
+  box-shadow: 0 0 0 3px rgba(255, 107, 0, 0.12);
+}
+
+
+.form-group input:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
+}
+
+
+/* ========================================
+   REGISTER BUTTON
+======================================== */
+
+.auth-btn {
+  width: 100%;
+  height: 50px;
+
+  margin-top: 5px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  background: #ff6b00;
+
+  color: #ffffff;
+
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+
+.auth-btn:hover {
+  background: #ff7a1a;
+
+  transform: translateY(-2px);
+
+  box-shadow: 0 8px 20px rgba(255, 107, 0, 0.25);
+}
+
+
+.auth-btn:active {
+  transform: translateY(0);
+}
+
+
+.auth-btn:disabled {
+  background: #475569;
+
+  cursor: not-allowed;
+
+  transform: none;
+
+  box-shadow: none;
+}
+
+
+/* ========================================
+   LOGIN FOOTER
+======================================== */
+
+.auth-footer {
+  margin: 22px 0 0;
+
+  text-align: center;
+
+  color: #94a3b8;
+
+  font-size: 14px;
+}
+
+
+.auth-footer a {
+  color: #ff6b00;
+
+  font-weight: 600;
+
+  text-decoration: none;
+
+  transition: 0.2s;
+}
+
+
+.auth-footer a:hover {
+  color: #ff8c33;
+
+  text-decoration: underline;
+}
+
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 1100px) {
+
+  .auth-page {
+    padding-top: 160px;
+  }
+
+}
+
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 768px) {
+
+  .auth-page {
+    min-height: 100vh;
+
+    padding-top: 120px;
+    padding-bottom: 50px;
+
+    padding-left: 18px;
+    padding-right: 18px;
+  }
+
+  .auth-box {
+    max-width: 460px;
+
+    padding: 30px 25px;
+
+    border-radius: 16px;
+  }
+
+  .auth-box h2 {
+    font-size: 27px;
+  }
+
+}
+
+
+/* ========================================
+   SMALL MOBILE
+======================================== */
+
+@media (max-width: 480px) {
+
+  .auth-page {
+    padding-top: 110px;
+
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .auth-box {
+    padding: 27px 20px;
+
+    border-radius: 14px;
+  }
+
+  .auth-box h2 {
+    font-size: 25px;
+  }
+
+  .auth-subtitle {
+    font-size: 13px;
+
+    margin-bottom: 24px;
+  }
+
+  .form-group {
+    margin-bottom: 16px;
+  }
+
+  .form-group input {
+    height: 46px;
+
+    font-size: 14px;
+  }
+
+  .auth-btn {
+    height: 48px;
+
+    font-size: 15px;
+  }
+
+  .auth-footer {
+    font-size: 13px;
+  }
+
+}

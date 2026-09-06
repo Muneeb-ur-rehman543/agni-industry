@@ -5,12 +5,14 @@ function Admin() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // Railway Backend URL
-  const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "https://agni-industry-production.up.railway.app";
+  // ===============================
+  // LOCAL BACKEND URL
+  // ===============================
+  const API_URL = "http://localhost:5000";
 
-  // Product form states
+  // ===============================
+  // PRODUCT FORM STATES
+  // ===============================
   const [productName, setProductName] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
@@ -25,20 +27,30 @@ function Admin() {
       setLoading(true);
 
       const response = await fetch(`${API_URL}/api/orders`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch orders");
+      }
+
       const data = await response.json();
 
       if (data.success) {
         setOrders(data.orders || []);
       } else {
         console.error("Failed to fetch orders:", data.message);
+        setOrders([]);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
+      setOrders([]);
     } finally {
       setLoading(false);
     }
   };
 
+  // ===============================
+  // LOAD ORDERS ON PAGE OPEN
+  // ===============================
   useEffect(() => {
     fetchOrders();
   }, []);
@@ -74,7 +86,6 @@ function Admin() {
       if (data.success) {
         alert("Product added successfully! 🎉");
 
-        // Clear form
         setProductName("");
         setCategory("");
         setPrice("");
@@ -112,7 +123,7 @@ function Admin() {
       if (data.success) {
         setOrders((currentOrders) =>
           currentOrders.map((order) =>
-            order._id === orderId
+            String(order._id) === String(orderId)
               ? {
                   ...order,
                   status: newStatus,
@@ -120,6 +131,8 @@ function Admin() {
               : order
           )
         );
+
+        alert("Order status updated successfully!");
       } else {
         alert(data.message || "Failed to update status.");
       }
@@ -152,7 +165,7 @@ function Admin() {
       if (data.success) {
         setOrders((currentOrders) =>
           currentOrders.filter(
-            (order) => order._id !== orderId
+            (order) => String(order._id) !== String(orderId)
           )
         );
 
@@ -166,9 +179,17 @@ function Admin() {
     }
   };
 
+  // ===============================
+  // REFRESH ORDERS
+  // ===============================
+  const handleRefresh = () => {
+    fetchOrders();
+  };
+
   return (
     <section className="admin-page">
       <h1>Admin Panel</h1>
+
       <p>Manage Products & Orders</p>
 
       <div className="admin-container">
@@ -224,7 +245,7 @@ function Admin() {
               onChange={(e) =>
                 setDescription(e.target.value)
               }
-            ></textarea>
+            />
 
             <button type="submit">
               Add Product
@@ -237,18 +258,60 @@ function Admin() {
             CUSTOMER ORDERS
         =============================== */}
         <div className="product-list">
-          <h2>Customer Orders</h2>
 
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "20px",
+            }}
+          >
+            <h2>Customer Orders</h2>
+
+            <button
+              type="button"
+              onClick={handleRefresh}
+              style={{
+                padding: "10px 18px",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              🔄 Refresh Orders
+            </button>
+          </div>
+
+          {/* LOADING */}
           {loading ? (
             <p>Loading orders...</p>
           ) : orders.length === 0 ? (
-            <p>No orders placed yet.</p>
+            <div>
+              <p>No orders placed yet.</p>
+
+              <button
+                type="button"
+                onClick={handleRefresh}
+                style={{
+                  marginTop: "15px",
+                  padding: "10px 18px",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                Check Again
+              </button>
+            </div>
           ) : (
             <div className="orders-table-wrapper">
 
               <table>
+
                 <thead>
                   <tr>
+                    <th>Order ID</th>
                     <th>Customer</th>
                     <th>Products</th>
                     <th>Total</th>
@@ -261,109 +324,182 @@ function Admin() {
                 </thead>
 
                 <tbody>
-                  {orders.map((order) => (
-                    <tr key={order._id}>
 
-                      {/* CUSTOMER */}
-                      <td>
-                        <strong>
-                          {order.customerName}
-                        </strong>
+                  {orders.map((order, index) => {
 
-                        <br />
+                    const orderId =
+                      order._id || order.id || index + 1;
 
-                        <small>
-                          {order.email}
-                        </small>
-                      </td>
+                    const customerName =
+                      order.customerName ||
+                      order.name ||
+                      order.customer?.name ||
+                      "Customer";
 
-                      {/* PRODUCTS */}
-                      <td>
-                        {order.items?.map(
-                          (item, index) => (
-                            <div key={index}>
-                              {item.name} ×{" "}
-                              {item.quantity || 1}
-                            </div>
-                          )
-                        )}
-                      </td>
+                    const email =
+                      order.email ||
+                      order.customerEmail ||
+                      order.customer?.email ||
+                      "No email";
 
-                      {/* TOTAL */}
-                      <td>
-                        $
-                        {Number(
-                          order.total || 0
-                        ).toFixed(2)}
-                      </td>
+                    const phone =
+                      order.phone ||
+                      order.customer?.phone ||
+                      "N/A";
 
-                      {/* PHONE */}
-                      <td>
-                        {order.phone}
-                      </td>
+                    const address =
+                      order.address ||
+                      order.customer?.address ||
+                      "N/A";
 
-                      {/* ADDRESS */}
-                      <td>
-                        {order.address}
-                      </td>
+                    const items =
+                      order.items ||
+                      order.products ||
+                      [];
 
-                      {/* DATE */}
-                      <td>
-                        {order.createdAt
-                          ? new Date(
-                              order.createdAt
-                            ).toLocaleDateString()
-                          : "N/A"}
-                      </td>
+                    const total =
+                      order.total ||
+                      order.totalPrice ||
+                      order.amount ||
+                      0;
 
-                      {/* STATUS */}
-                      <td>
-                        <select
-                          value={
-                            order.status || "Pending"
-                          }
-                          onChange={(e) =>
-                            updateStatus(
-                              order._id,
-                              e.target.value
+                    const status =
+                      order.status || "Pending";
+
+                    return (
+                      <tr key={String(orderId)}>
+
+                        {/* ORDER ID */}
+                        <td>
+                          <strong>
+                            #{String(orderId).slice(-8)}
+                          </strong>
+                        </td>
+
+                        {/* CUSTOMER */}
+                        <td>
+                          <strong>
+                            {customerName}
+                          </strong>
+
+                          <br />
+
+                          <small>
+                            {email}
+                          </small>
+                        </td>
+
+                        {/* PRODUCTS */}
+                        <td>
+                          {items.length > 0 ? (
+                            items.map(
+                              (item, itemIndex) => (
+                                <div
+                                  key={itemIndex}
+                                  style={{
+                                    marginBottom: "5px",
+                                  }}
+                                >
+                                  {item.name || "Product"}{" "}
+                                  ×{" "}
+                                  {item.quantity || 1}
+                                </div>
+                              )
                             )
-                          }
-                        >
-                          <option value="Pending">
-                            Pending
-                          </option>
+                          ) : (
+                            <span>
+                              No product details
+                            </span>
+                          )}
+                        </td>
 
-                          <option value="Processing">
-                            Processing
-                          </option>
+                        {/* TOTAL */}
+                        <td>
+                          <strong>
+                            PKR{" "}
+                            {Number(total).toLocaleString()}
+                          </strong>
+                        </td>
 
-                          <option value="Shipped">
-                            Shipped
-                          </option>
+                        {/* PHONE */}
+                        <td>
+                          {phone}
+                        </td>
 
-                          <option value="Delivered">
-                            Delivered
-                          </option>
-                        </select>
-                      </td>
+                        {/* ADDRESS */}
+                        <td>
+                          {address}
+                        </td>
 
-                      {/* DELETE */}
-                      <td>
-                        <button
-                          className="delete-order-btn"
-                          onClick={() =>
-                            deleteOrder(
-                              order._id
-                            )
-                          }
-                        >
-                          Delete
-                        </button>
-                      </td>
+                        {/* DATE */}
+                        <td>
+                          {order.createdAt
+                            ? new Date(
+                                order.createdAt
+                              ).toLocaleString()
+                            : order.date
+                            ? order.date
+                            : "N/A"}
+                        </td>
 
-                    </tr>
-                  ))}
+                        {/* STATUS */}
+                        <td>
+
+                          <select
+                            value={status}
+                            onChange={(e) =>
+                              updateStatus(
+                                orderId,
+                                e.target.value
+                              )
+                            }
+                          >
+
+                            <option value="Pending">
+                              Pending
+                            </option>
+
+                            <option value="Processing">
+                              Processing
+                            </option>
+
+                            <option value="Shipped">
+                              Shipped
+                            </option>
+
+                            <option value="Delivered">
+                              Delivered
+                            </option>
+
+                            <option value="Cancelled">
+                              Cancelled
+                            </option>
+
+                          </select>
+
+                        </td>
+
+                        {/* DELETE */}
+                        <td>
+
+                          <button
+                            type="button"
+                            className="delete-order-btn"
+                            onClick={() =>
+                              deleteOrder(orderId)
+                            }
+                          >
+                            Delete
+                          </button>
+
+                        </td>
+
+                      </tr>
+                    );
+                  })}
+
                 </tbody>
+
               </table>
 
             </div>
@@ -372,6 +508,7 @@ function Admin() {
         </div>
 
       </div>
+
     </section>
   );
 }

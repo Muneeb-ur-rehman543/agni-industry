@@ -319,3 +319,33 @@
     height: 40px;
   }
 }
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.user-name {
+  background: #ff6b00;
+  color: white;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.logout-btn {
+  background: transparent;
+  color: white;
+  border: 1px solid #ff6b00;
+  padding: 9px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.3s;
+}
+
+.logout-btn:hover {
+  background: #ff6b00;
+  color: white;
+}

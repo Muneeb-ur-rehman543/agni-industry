@@ -13,6 +13,11 @@ import Contact from "./pages/Contact";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 
+// Login, Register & Forgot Password
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+
 // Context
 import CartProvider from "./context/CartContext";
 
@@ -28,6 +33,7 @@ function App() {
         <Navbar />
 
         <Routes>
+          {/* Main Pages */}
           <Route path="/" element={<Home />} />
           <Route path="/company" element={<Company />} />
           <Route path="/services" element={<Services />} />
@@ -35,6 +41,11 @@ function App() {
           <Route path="/admin" element={<Admin />} />
           <Route path="/products" element={<Products />} />
           <Route path="/contact" element={<Contact />} />
+
+          {/* Login, Register & Forgot Password */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
 
           {/* Product Detail */}
           <Route path="/product/:id" element={<ProductDetail />} />

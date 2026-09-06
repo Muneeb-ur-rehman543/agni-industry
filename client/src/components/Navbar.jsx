@@ -1,5 +1,5 @@
 import "./Navbar.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { CartContext } from "../context/CartContext";
 
@@ -7,20 +7,50 @@ function Navbar() {
   const { cart } = useContext(CartContext);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const navigate = useNavigate();
+
+  // Get logged-in user
+  const getUser = () => {
+    try {
+      const savedUser = localStorage.getItem("user");
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (error) {
+      console.error("User data error:", error);
+      return null;
+    }
+  };
+
+  const user = getUser();
+
   const closeMenu = () => {
     setMenuOpen(false);
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    closeMenu();
+    navigate("/login");
+    window.location.reload();
+  };
+
+  // Get user's name
+  const userName =
+    user?.name ||
+    user?.username ||
+    user?.fullName ||
+    "User";
+
   return (
     <header className="navbar">
 
+      {/* Logo */}
       <div className="logo">
         <Link to="/" onClick={closeMenu}>
           AGNI
         </Link>
       </div>
 
-      {/* Desktop / Mobile Navigation */}
+      {/* Navigation */}
       <ul className={`nav-links ${menuOpen ? "mobile-open" : ""}`}>
 
         <li>
@@ -65,6 +95,7 @@ function Navbar() {
           </Link>
         </li>
 
+        {/* Cart */}
         <li>
           <Link
             to="/cart"
@@ -75,21 +106,33 @@ function Navbar() {
           </Link>
         </li>
 
-        {/* Get Quote on mobile menu */}
-        <li className="mobile-quote-item">
-          <button className="quote-btn">
-            Get Quote
-          </button>
-        </li>
-
       </ul>
 
-      {/* Desktop Quote */}
-      <button className="quote-btn desktop-quote">
-        Get Quote
-      </button>
+      {/* Login / User Name */}
+      {user ? (
+        <div className="user-menu desktop-quote">
+          <span className="user-name">
+            👤 {userName}
+          </span>
 
-      {/* Hamburger */}
+          <button
+            className="logout-btn"
+            onClick={handleLogout}
+          >
+            Logout
+          </button>
+        </div>
+      ) : (
+        <Link
+          to="/login"
+          className="quote-btn desktop-quote"
+          onClick={closeMenu}
+        >
+          Login
+        </Link>
+      )}
+
+      {/* Mobile Menu Button */}
       <button
         className={`menu-toggle ${menuOpen ? "active" : ""}`}
         onClick={() => setMenuOpen(!menuOpen)}
