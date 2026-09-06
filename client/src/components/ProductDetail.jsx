@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { CartContext } from "../context/CartContext";
 import "./productDetail.css";
 
@@ -90,11 +90,27 @@ const products = [
 
 function ProductDetail() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { addToCart } = useContext(CartContext);
 
   const product = products.find(
     (item) => item.id === Number(id)
   );
+
+  const handleAddToCart = () => {
+    // Check if user is logged in
+    const userLoggedIn = localStorage.getItem("userLoggedIn");
+
+    if (userLoggedIn !== "true") {
+      alert("Please login first to add products to cart! 🔐");
+      navigate("/login");
+      return;
+    }
+
+    // User is logged in
+    addToCart(product);
+    alert("Product added to cart! 🛒");
+  };
 
   if (!product) {
     return (
@@ -119,7 +135,7 @@ function ProductDetail() {
 
           <p>{product.desc}</p>
 
-          <button onClick={() => addToCart(product)}>
+          <button onClick={handleAddToCart}>
             Add to Cart
           </button>
         </div>

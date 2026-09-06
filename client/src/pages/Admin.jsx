@@ -3,7 +3,9 @@ import "./Admin.css";
 
 function Admin() {
   const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [productsLoading, setProductsLoading] = useState(true);
 
   // ===============================
   // LOCAL BACKEND URL
@@ -49,10 +51,39 @@ function Admin() {
   };
 
   // ===============================
-  // LOAD ORDERS ON PAGE OPEN
+  // FETCH PRODUCTS
+  // ===============================
+  const fetchProducts = async () => {
+    try {
+      setProductsLoading(true);
+
+      const response = await fetch(`${API_URL}/api/products`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch products");
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setProducts(data.products || []);
+      } else {
+        setProducts(data.products || data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    } finally {
+      setProductsLoading(false);
+    }
+  };
+
+  // ===============================
+  // LOAD ORDERS + PRODUCTS
   // ===============================
   useEffect(() => {
     fetchOrders();
+    fetchProducts();
   }, []);
 
   // ===============================
@@ -91,11 +122,51 @@ function Admin() {
         setPrice("");
         setDescription("");
         setImage("");
+
+        // Refresh products after adding
+        fetchProducts();
       } else {
         alert(data.message || "Failed to add product.");
       }
     } catch (error) {
       console.error("Add Product Error:", error);
+      alert("Server error. Please try again.");
+    }
+  };
+
+  // ===============================
+  // DELETE PRODUCT
+  // ===============================
+  const deleteProduct = async (productId, productName) => {
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete "${productName}"?`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/products/${productId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        setProducts((currentProducts) =>
+          currentProducts.filter(
+            (product) => String(product._id) !== String(productId)
+          )
+        );
+
+        alert("Product deleted successfully.");
+      } else {
+        alert(data.message || "Failed to delete product.");
+      }
+    } catch (error) {
+      console.error("Delete Product Error:", error);
       alert("Server error. Please try again.");
     }
   };
@@ -186,6 +257,13 @@ function Admin() {
     fetchOrders();
   };
 
+  // ===============================
+  // REFRESH PRODUCTS
+  // ===============================
+  const handleProductRefresh = () => {
+    fetchProducts();
+  };
+
   return (
     <section className="admin-page">
       <h1>Admin Panel</h1>
@@ -252,6 +330,119 @@ function Admin() {
             </button>
 
           </form>
+        </div>
+
+        {/* ===============================
+            PRODUCTS
+        =============================== */}
+        <div className="product-list">
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "20px",
+            }}
+          >
+            <h2>Products</h2>
+
+            <button
+              type="button"
+              onClick={handleProductRefresh}
+              style={{
+                padding: "10px 18px",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              🔄 Refresh Products
+            </button>
+          </div>
+
+          {/* PRODUCTS LOADING */}
+          {productsLoading ? (
+            <p>Loading products...</p>
+          ) : products.length === 0 ? (
+            <p>No products found.</p>
+          ) : (
+            <div className="orders-table-wrapper">
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Description</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  {products.map((product) => (
+
+                    <tr key={product._id}>
+
+                      {/* PRODUCT */}
+                      <td>
+                        <strong>
+                          {product.name}
+                        </strong>
+                      </td>
+
+                      {/* CATEGORY */}
+                      <td>
+                        {product.category}
+                      </td>
+
+                      {/* PRICE */}
+                      <td>
+                        <strong>
+                          PKR{" "}
+                          {Number(
+                            product.price
+                          ).toLocaleString()}
+                        </strong>
+                      </td>
+
+                      {/* DESCRIPTION */}
+                      <td>
+                        {product.description || "N/A"}
+                      </td>
+
+                      {/* DELETE */}
+                      <td>
+
+                        <button
+                          type="button"
+                          className="delete-order-btn"
+                          onClick={() =>
+                            deleteProduct(
+                              product._id,
+                              product.name
+                            )
+                          }
+                        >
+                          Delete
+                        </button>
+
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            </div>
+          )}
+
         </div>
 
         {/* ===============================
