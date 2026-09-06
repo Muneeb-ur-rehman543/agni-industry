@@ -22,14 +22,27 @@ function Navbar() {
 
   const user = getUser();
 
+  // Check admin login
+  const isAdminLoggedIn =
+    localStorage.getItem("adminLoggedIn") === "true";
+
   const closeMenu = () => {
     setMenuOpen(false);
   };
 
+  // User logout
   const handleLogout = () => {
     localStorage.removeItem("user");
     closeMenu();
     navigate("/login");
+    window.location.reload();
+  };
+
+  // Admin logout
+  const handleAdminLogout = () => {
+    localStorage.removeItem("adminLoggedIn");
+    closeMenu();
+    navigate("/admin-login");
     window.location.reload();
   };
 
@@ -89,8 +102,12 @@ function Navbar() {
           </Link>
         </li>
 
+        {/* Admin */}
         <li>
-          <Link to="/admin" onClick={closeMenu}>
+          <Link
+            to={isAdminLoggedIn ? "/admin" : "/admin-login"}
+            onClick={closeMenu}
+          >
             Admin
           </Link>
         </li>
@@ -108,9 +125,28 @@ function Navbar() {
 
       </ul>
 
-      {/* Login / User Name */}
-      {user ? (
+      {/* =========================
+          USER / ADMIN LOGIN
+      ========================= */}
+
+      {isAdminLoggedIn ? (
         <div className="user-menu desktop-quote">
+
+          <span className="user-name">
+            🔐 Admin
+          </span>
+
+          <button
+            className="logout-btn"
+            onClick={handleAdminLogout}
+          >
+            Admin Logout
+          </button>
+
+        </div>
+      ) : user ? (
+        <div className="user-menu desktop-quote">
+
           <span className="user-name">
             👤 {userName}
           </span>
@@ -121,6 +157,7 @@ function Navbar() {
           >
             Logout
           </button>
+
         </div>
       ) : (
         <Link
