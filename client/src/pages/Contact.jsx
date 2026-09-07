@@ -37,7 +37,7 @@ const Contact = () => {
 
     try {
       const res = await axios.post(
-        "http://localhost:5000/api/contact",
+        "https://server-gilt-phi-18.vercel.app/api/contact",
         formData
       );
 
@@ -297,4 +297,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default Contact
