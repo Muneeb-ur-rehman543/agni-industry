@@ -4,8 +4,11 @@ import "./Admin.css";
 function Admin() {
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
+  const [messages, setMessages] = useState([]);
+
   const [loading, setLoading] = useState(true);
   const [productsLoading, setProductsLoading] = useState(true);
+  const [messagesLoading, setMessagesLoading] = useState(true);
 
   // ===============================
   // LOCAL BACKEND URL
@@ -79,11 +82,41 @@ function Admin() {
   };
 
   // ===============================
-  // LOAD ORDERS + PRODUCTS
+  // FETCH CUSTOMER MESSAGES
+  // ===============================
+  const fetchMessages = async () => {
+    try {
+      setMessagesLoading(true);
+
+      const response = await fetch(`${API_URL}/api/contact`);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch messages");
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setMessages(data.contacts || []);
+      } else {
+        console.error("Failed to fetch messages:", data.message);
+        setMessages([]);
+      }
+    } catch (error) {
+      console.error("Error fetching messages:", error);
+      setMessages([]);
+    } finally {
+      setMessagesLoading(false);
+    }
+  };
+
+  // ===============================
+  // LOAD ORDERS + PRODUCTS + MESSAGES
   // ===============================
   useEffect(() => {
     fetchOrders();
     fetchProducts();
+    fetchMessages();
   }, []);
 
   // ===============================
@@ -123,7 +156,6 @@ function Admin() {
         setDescription("");
         setImage("");
 
-        // Refresh products after adding
         fetchProducts();
       } else {
         alert(data.message || "Failed to add product.");
@@ -264,11 +296,18 @@ function Admin() {
     fetchProducts();
   };
 
+  // ===============================
+  // REFRESH MESSAGES
+  // ===============================
+  const handleMessageRefresh = () => {
+    fetchMessages();
+  };
+
   return (
     <section className="admin-page">
       <h1>Admin Panel</h1>
 
-      <p>Manage Products & Orders</p>
+      <p>Manage Products, Orders & Customer Messages</p>
 
       <div className="admin-container">
 
@@ -284,45 +323,35 @@ function Admin() {
               type="text"
               placeholder="Product Name"
               value={productName}
-              onChange={(e) =>
-                setProductName(e.target.value)
-              }
+              onChange={(e) => setProductName(e.target.value)}
             />
 
             <input
               type="text"
               placeholder="Category"
               value={category}
-              onChange={(e) =>
-                setCategory(e.target.value)
-              }
+              onChange={(e) => setCategory(e.target.value)}
             />
 
             <input
               type="number"
               placeholder="Price"
               value={price}
-              onChange={(e) =>
-                setPrice(e.target.value)
-              }
+              onChange={(e) => setPrice(e.target.value)}
             />
 
             <input
               type="text"
               placeholder="Image URL (optional)"
               value={image}
-              onChange={(e) =>
-                setImage(e.target.value)
-              }
+              onChange={(e) => setImage(e.target.value)}
             />
 
             <textarea
               placeholder="Product Description"
               rows="5"
               value={description}
-              onChange={(e) =>
-                setDescription(e.target.value)
-              }
+              onChange={(e) => setDescription(e.target.value)}
             />
 
             <button type="submit">
@@ -361,7 +390,6 @@ function Admin() {
             </button>
           </div>
 
-          {/* PRODUCTS LOADING */}
           {productsLoading ? (
             <p>Loading products...</p>
           ) : products.length === 0 ? (
@@ -387,19 +415,16 @@ function Admin() {
 
                     <tr key={product._id}>
 
-                      {/* PRODUCT */}
                       <td>
                         <strong>
                           {product.name}
                         </strong>
                       </td>
 
-                      {/* CATEGORY */}
                       <td>
                         {product.category}
                       </td>
 
-                      {/* PRICE */}
                       <td>
                         <strong>
                           PKR{" "}
@@ -409,12 +434,10 @@ function Admin() {
                         </strong>
                       </td>
 
-                      {/* DESCRIPTION */}
                       <td>
                         {product.description || "N/A"}
                       </td>
 
-                      {/* DELETE */}
                       <td>
 
                         <button
@@ -474,7 +497,6 @@ function Admin() {
             </button>
           </div>
 
-          {/* LOADING */}
           {loading ? (
             <p>Loading orders...</p>
           ) : orders.length === 0 ? (
@@ -560,14 +582,12 @@ function Admin() {
                     return (
                       <tr key={String(orderId)}>
 
-                        {/* ORDER ID */}
                         <td>
                           <strong>
                             #{String(orderId).slice(-8)}
                           </strong>
                         </td>
 
-                        {/* CUSTOMER */}
                         <td>
                           <strong>
                             {customerName}
@@ -580,7 +600,6 @@ function Admin() {
                           </small>
                         </td>
 
-                        {/* PRODUCTS */}
                         <td>
                           {items.length > 0 ? (
                             items.map(
@@ -604,25 +623,23 @@ function Admin() {
                           )}
                         </td>
 
-                        {/* TOTAL */}
                         <td>
                           <strong>
                             PKR{" "}
-                            {Number(total).toLocaleString()}
+                            {Number(
+                              total
+                            ).toLocaleString()}
                           </strong>
                         </td>
 
-                        {/* PHONE */}
                         <td>
                           {phone}
                         </td>
 
-                        {/* ADDRESS */}
                         <td>
                           {address}
                         </td>
 
-                        {/* DATE */}
                         <td>
                           {order.createdAt
                             ? new Date(
@@ -633,7 +650,6 @@ function Admin() {
                             : "N/A"}
                         </td>
 
-                        {/* STATUS */}
                         <td>
 
                           <select
@@ -670,7 +686,6 @@ function Admin() {
 
                         </td>
 
-                        {/* DELETE */}
                         <td>
 
                           <button
@@ -698,8 +713,122 @@ function Admin() {
 
         </div>
 
-      </div>
+        {/* ===============================
+            CUSTOMER MESSAGES
+        =============================== */}
+        <div className="product-list">
 
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              marginBottom: "20px",
+            }}
+          >
+            <h2>Customer Messages</h2>
+
+            <button
+              type="button"
+              onClick={handleMessageRefresh}
+              style={{
+                padding: "10px 18px",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
+            >
+              🔄 Refresh Messages
+            </button>
+          </div>
+
+          {/* MESSAGE LOADING */}
+          {messagesLoading ? (
+            <p>Loading messages...</p>
+          ) : messages.length === 0 ? (
+            <div>
+              <p>No customer messages yet.</p>
+
+              <button
+                type="button"
+                onClick={handleMessageRefresh}
+                style={{
+                  marginTop: "15px",
+                  padding: "10px 18px",
+                  border: "none",
+                  borderRadius: "8px",
+                  cursor: "pointer",
+                }}
+              >
+                Check Again
+              </button>
+            </div>
+          ) : (
+            <div className="orders-table-wrapper">
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  {messages.map((contact) => (
+
+                    <tr key={contact._id}>
+
+                      {/* NAME */}
+                      <td>
+                        <strong>
+                          {contact.name}
+                        </strong>
+                      </td>
+
+                      {/* EMAIL */}
+                      <td>
+                        {contact.email}
+                      </td>
+
+                      {/* PHONE */}
+                      <td>
+                        {contact.phone || "N/A"}
+                      </td>
+
+                      {/* MESSAGE */}
+                      <td>
+                        {contact.message}
+                      </td>
+
+                      {/* DATE */}
+                      <td>
+                        {contact.createdAt
+                          ? new Date(
+                              contact.createdAt
+                            ).toLocaleString()
+                          : "N/A"}
+                      </td>
+
+                    </tr>
+
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            </div>
+          )}
+
+        </div>
+
+      </div>
     </section>
   );
 }

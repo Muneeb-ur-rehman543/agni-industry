@@ -97,11 +97,14 @@ function ProductDetail() {
     (item) => item.id === Number(id)
   );
 
+  // ===============================
+  // ADD TO CART
+  // ===============================
   const handleAddToCart = () => {
-    // Check if user is logged in
-    const userLoggedIn = localStorage.getItem("userLoggedIn");
+    // Check the same login storage used by Login.jsx
+    const loggedInUser = localStorage.getItem("user");
 
-    if (userLoggedIn !== "true") {
+    if (!loggedInUser) {
       alert("Please login first to add products to cart! 🔐");
       navigate("/login");
       return;
@@ -109,12 +112,21 @@ function ProductDetail() {
 
     // User is logged in
     addToCart(product);
+
     alert("Product added to cart! 🛒");
   };
 
+  // ===============================
+  // PRODUCT NOT FOUND
+  // ===============================
   if (!product) {
     return (
-      <div style={{ padding: "120px 40px", color: "white" }}>
+      <div
+        style={{
+          padding: "120px 40px",
+          color: "white",
+        }}
+      >
         <h2>Product not found</h2>
       </div>
     );
@@ -122,13 +134,20 @@ function ProductDetail() {
 
   return (
     <div className="product-detail-page">
+
       <div className="product-detail-container">
 
+        {/* PRODUCT IMAGE */}
         <div className="product-image">
-          <img src={product.image} alt={product.name} />
+          <img
+            src={product.image}
+            alt={product.name}
+          />
         </div>
 
+        {/* PRODUCT DETAILS */}
         <div className="details">
+
           <h2>{product.name}</h2>
 
           <h4>${product.price}</h4>
@@ -138,9 +157,11 @@ function ProductDetail() {
           <button onClick={handleAddToCart}>
             Add to Cart
           </button>
+
         </div>
 
       </div>
+
     </div>
   );
 }
