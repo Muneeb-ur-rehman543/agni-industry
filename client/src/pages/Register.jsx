@@ -15,6 +15,15 @@ function Register() {
 
   const navigate = useNavigate();
 
+  // Backend URL
+  // Local development:
+  // VITE_API_URL=http://localhost:5000
+  //
+  // Vercel:
+  // VITE_API_URL=https://your-server-url.vercel.app
+  const API_URL =
+    import.meta.env.VITE_API_URL || "http://localhost:5000";
+
   // ========================================
   // HANDLE INPUT CHANGE
   // ========================================
@@ -35,8 +44,8 @@ function Register() {
 
     // Check empty fields
     if (
-      !formData.name ||
-      !formData.email ||
+      !formData.name.trim() ||
+      !formData.email.trim() ||
       !formData.password ||
       !formData.confirmPassword
     ) {
@@ -61,7 +70,7 @@ function Register() {
 
     try {
       const response = await fetch(
-        "http://localhost:5000/api/auth/register",
+        `${API_URL}/api/auth/register`,
         {
           method: "POST",
 
@@ -77,30 +86,44 @@ function Register() {
         }
       );
 
+      // Safely read response
       const data = await response.json();
 
       // ========================================
       // ERROR RESPONSE
       // ========================================
       if (!response.ok) {
-        setMessage(data.message || "Registration failed");
-        setLoading(false);
+        setMessage(
+          data.message || "Registration failed"
+        );
         return;
       }
 
       // ========================================
       // SUCCESS
       // ========================================
-      setMessage("Registration successful! Please login.");
+      setMessage(
+        "Registration successful! Please login."
+      );
 
+      // Clear form
+      setFormData({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+
+      // Go to login
       setTimeout(() => {
         navigate("/login");
       }, 1000);
+
     } catch (error) {
       console.error("Registration Error:", error);
 
       setMessage(
-        "Unable to connect to server. Please make sure backend is running."
+        "Unable to connect to server. Please try again."
       );
     } finally {
       setLoading(false);
@@ -133,7 +156,9 @@ function Register() {
 
           {/* Name */}
           <div className="form-group">
-            <label htmlFor="name">Name</label>
+            <label htmlFor="name">
+              Name
+            </label>
 
             <input
               id="name"
@@ -149,7 +174,9 @@ function Register() {
 
           {/* Email */}
           <div className="form-group">
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email">
+              Email
+            </label>
 
             <input
               id="email"
@@ -165,7 +192,9 @@ function Register() {
 
           {/* Password */}
           <div className="form-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">
+              Password
+            </label>
 
             <input
               id="password"
@@ -203,14 +232,19 @@ function Register() {
             className="auth-btn"
             disabled={loading}
           >
-            {loading ? "Creating Account..." : "Register"}
+            {loading
+              ? "Creating Account..."
+              : "Register"}
           </button>
+
         </form>
 
         {/* Login Link */}
         <p className="auth-footer">
           Already have an account?{" "}
-          <Link to="/login">Login</Link>
+          <Link to="/login">
+            Login
+          </Link>
         </p>
 
       </div>
