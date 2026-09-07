@@ -25,7 +25,6 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check empty fields
     if (!formData.email || !formData.password) {
       setMessage("Please fill all fields");
       return;
@@ -35,16 +34,19 @@ function Login() {
     setMessage("");
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+      const response = await fetch(
+        "https://server-gilt-phi-18.vercel.app/api/auth/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: formData.email,
+            password: formData.password,
+          }),
+        }
+      );
 
       const data = await response.json();
 
@@ -54,7 +56,6 @@ function Login() {
         return;
       }
 
-      // Save actual logged-in user returned by backend
       localStorage.setItem(
         "user",
         JSON.stringify(data.user || data)
@@ -94,7 +95,6 @@ function Login() {
 
         <form onSubmit={handleSubmit}>
 
-          {/* Email */}
           <div className="login-form-group">
             <label htmlFor="email">
               Email Address
@@ -111,7 +111,6 @@ function Login() {
             />
           </div>
 
-          {/* Password */}
           <div className="login-form-group">
             <label htmlFor="password">
               Password
@@ -128,7 +127,6 @@ function Login() {
             />
           </div>
 
-          {/* Forgot Password */}
           <div className="forgot-wrapper">
             <Link
               to="/forgot-password"
@@ -138,7 +136,6 @@ function Login() {
             </Link>
           </div>
 
-          {/* Login Button */}
           <button
             type="submit"
             className="login-btn"
@@ -149,7 +146,6 @@ function Login() {
 
         </form>
 
-        {/* Register */}
         <p className="login-footer">
           Don't have an account?{" "}
           <Link to="/register">
