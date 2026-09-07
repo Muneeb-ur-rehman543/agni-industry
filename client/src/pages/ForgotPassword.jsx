@@ -12,13 +12,18 @@ function ForgotPassword() {
 
   const [loading, setLoading] = useState(false);
 
-  // ===============================
+  // ========================================
+  // VERCEL BACKEND URL
+  // ========================================
+  const API_URL = "https://server-gilt-phi-18.vercel.app";
+
+  // ========================================
   // STEP 1 - SEND OTP
-  // ===============================
+  // ========================================
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
 
-    if (!email) {
+    if (!email.trim()) {
       alert("Please enter your email");
       return;
     }
@@ -27,7 +32,7 @@ function ForgotPassword() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/auth/forgot-password",
+        `${API_URL}/api/auth/forgot-password`,
         {
           method: "POST",
           headers: {
@@ -51,15 +56,18 @@ function ForgotPassword() {
       setStep(2);
     } catch (error) {
       console.error("SEND OTP ERROR:", error);
-      alert("Server error. Please try again.");
+
+      alert(
+        "Unable to connect to server. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // ===============================
+  // ========================================
   // STEP 2 - VERIFY OTP
-  // ===============================
+  // ========================================
   const handleOtpSubmit = async (e) => {
     e.preventDefault();
 
@@ -77,7 +85,7 @@ function ForgotPassword() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/auth/verify-otp",
+        `${API_URL}/api/auth/verify-otp`,
         {
           method: "POST",
           headers: {
@@ -102,15 +110,18 @@ function ForgotPassword() {
       setStep(3);
     } catch (error) {
       console.error("VERIFY OTP ERROR:", error);
-      alert("Server error. Please try again.");
+
+      alert(
+        "Unable to connect to server. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // ===============================
+  // ========================================
   // STEP 3 - RESET PASSWORD
-  // ===============================
+  // ========================================
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
@@ -133,7 +144,7 @@ function ForgotPassword() {
       setLoading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/auth/reset-password",
+        `${API_URL}/api/auth/reset-password`,
         {
           method: "POST",
           headers: {
@@ -158,25 +169,32 @@ function ForgotPassword() {
       window.location.href = "/login";
     } catch (error) {
       console.error("RESET PASSWORD ERROR:", error);
-      alert("Server error. Please try again.");
+
+      alert(
+        "Unable to connect to server. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
+  // ========================================
+  // UI
+  // ========================================
   return (
     <div className="forgot-page">
       <div className="forgot-card">
 
-        {/* ===============================
+        {/* =================================
             STEP 1
-        =============================== */}
+        ================================= */}
         {step === 1 && (
           <>
             <h2>Forgot Password?</h2>
 
             <p className="forgot-subtitle">
-              Enter your registered email and we'll send you an OTP.
+              Enter your registered email and we'll
+              send you an OTP.
             </p>
 
             <form onSubmit={handleEmailSubmit}>
@@ -186,20 +204,28 @@ function ForgotPassword() {
                 type="email"
                 placeholder="Enter your registered email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+                disabled={loading}
                 required
               />
 
-              <button type="submit" disabled={loading}>
-                {loading ? "Sending OTP..." : "Send OTP"}
+              <button
+                type="submit"
+                disabled={loading}
+              >
+                {loading
+                  ? "Sending OTP..."
+                  : "Send OTP"}
               </button>
             </form>
           </>
         )}
 
-        {/* ===============================
+        {/* =================================
             STEP 2
-        =============================== */}
+        ================================= */}
         {step === 2 && (
           <>
             <h2>Verify OTP</h2>
@@ -219,21 +245,29 @@ function ForgotPassword() {
                 maxLength="6"
                 value={otp}
                 onChange={(e) =>
-                  setOtp(e.target.value.replace(/\D/g, ""))
+                  setOtp(
+                    e.target.value.replace(/\D/g, "")
+                  )
                 }
+                disabled={loading}
                 required
               />
 
-              <button type="submit" disabled={loading}>
-                {loading ? "Verifying..." : "Verify OTP"}
+              <button
+                type="submit"
+                disabled={loading}
+              >
+                {loading
+                  ? "Verifying..."
+                  : "Verify OTP"}
               </button>
             </form>
           </>
         )}
 
-        {/* ===============================
+        {/* =================================
             STEP 3
-        =============================== */}
+        ================================= */}
         {step === 3 && (
           <>
             <h2>Reset Password</h2>
@@ -249,7 +283,11 @@ function ForgotPassword() {
                 type="password"
                 placeholder="Enter new password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) =>
+                  setPassword(e.target.value)
+                }
+                disabled={loading}
+                autoComplete="new-password"
                 required
               />
 
@@ -262,16 +300,24 @@ function ForgotPassword() {
                 onChange={(e) =>
                   setConfirmPassword(e.target.value)
                 }
+                disabled={loading}
+                autoComplete="new-password"
                 required
               />
 
-              <button type="submit" disabled={loading}>
-                {loading ? "Resetting..." : "Reset Password"}
+              <button
+                type="submit"
+                disabled={loading}
+              >
+                {loading
+                  ? "Resetting..."
+                  : "Reset Password"}
               </button>
             </form>
           </>
         )}
 
+        {/* Back to Login */}
         <div className="back-login">
           <Link to="/login">
             ← Back to Login
@@ -284,4 +330,3 @@ function ForgotPassword() {
 }
 
 export default ForgotPassword;
-
