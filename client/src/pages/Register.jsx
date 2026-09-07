@@ -15,14 +15,10 @@ function Register() {
 
   const navigate = useNavigate();
 
-  // Backend URL
-  // Local development:
-  // VITE_API_URL=http://localhost:5000
-  //
-  // Vercel:
-  // VITE_API_URL=https://your-server-url.vercel.app
-  const API_URL =
-    import.meta.env.VITE_API_URL || "http://localhost:5000";
+  // ========================================
+  // VERCEL BACKEND URL
+  // ========================================
+  const API_URL = "https://server-gilt-phi-18.vercel.app";
 
   // ========================================
   // HANDLE INPUT CHANGE
@@ -86,16 +82,13 @@ function Register() {
         }
       );
 
-      // Safely read response
       const data = await response.json();
 
       // ========================================
       // ERROR RESPONSE
       // ========================================
       if (!response.ok) {
-        setMessage(
-          data.message || "Registration failed"
-        );
+        setMessage(data.message || "Registration failed");
         return;
       }
 
@@ -114,11 +107,10 @@ function Register() {
         confirmPassword: "",
       });
 
-      // Go to login
+      // Redirect to login
       setTimeout(() => {
         navigate("/login");
       }, 1000);
-
     } catch (error) {
       console.error("Registration Error:", error);
 
