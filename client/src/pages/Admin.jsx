@@ -2,6 +2,10 @@ import { useEffect, useState } from "react";
 import "./Admin.css";
 
 function Admin() {
+  // ===============================
+  // DATA STATES
+  // ===============================
+
   const [orders, setOrders] = useState([]);
   const [products, setProducts] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -11,13 +15,17 @@ function Admin() {
   const [messagesLoading, setMessagesLoading] = useState(true);
 
   // ===============================
-  // LOCAL BACKEND URL
+  // BACKEND URL
   // ===============================
-  const API_URL = "http://localhost:5000";
+
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://server-gilt-phi-18.vercel.app";
 
   // ===============================
   // PRODUCT FORM STATES
   // ===============================
+
   const [productName, setProductName] = useState("");
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState("");
@@ -27,27 +35,23 @@ function Admin() {
   // ===============================
   // FETCH ORDERS
   // ===============================
+
   const fetchOrders = async () => {
     try {
       setLoading(true);
 
       const response = await fetch(`${API_URL}/api/orders`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch orders");
-      }
-
       const data = await response.json();
+
+      console.log("ORDERS RESPONSE:", data);
 
       if (data.success) {
         setOrders(data.orders || []);
       } else {
         console.error("Failed to fetch orders:", data.message);
-        setOrders([]);
       }
     } catch (error) {
       console.error("Error fetching orders:", error);
-      setOrders([]);
     } finally {
       setLoading(false);
     }
@@ -56,26 +60,23 @@ function Admin() {
   // ===============================
   // FETCH PRODUCTS
   // ===============================
+
   const fetchProducts = async () => {
     try {
       setProductsLoading(true);
 
       const response = await fetch(`${API_URL}/api/products`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch products");
-      }
-
       const data = await response.json();
+
+      console.log("PRODUCTS RESPONSE:", data);
 
       if (data.success) {
         setProducts(data.products || []);
       } else {
-        setProducts(data.products || data || []);
+        console.error("Failed to fetch products:", data.message);
       }
     } catch (error) {
       console.error("Error fetching products:", error);
-      setProducts([]);
     } finally {
       setProductsLoading(false);
     }
@@ -84,35 +85,35 @@ function Admin() {
   // ===============================
   // FETCH CUSTOMER MESSAGES
   // ===============================
+
   const fetchMessages = async () => {
     try {
       setMessagesLoading(true);
 
       const response = await fetch(`${API_URL}/api/contact`);
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch messages");
-      }
-
       const data = await response.json();
 
+      console.log("CONTACT RESPONSE:", data);
+
       if (data.success) {
-        setMessages(data.contacts || []);
+        setMessages(data.messages || data.contacts || []);
       } else {
-        console.error("Failed to fetch messages:", data.message);
-        setMessages([]);
+        console.error(
+          "Failed to fetch customer messages:",
+          data.message
+        );
       }
     } catch (error) {
-      console.error("Error fetching messages:", error);
-      setMessages([]);
+      console.error("Error fetching customer messages:", error);
     } finally {
       setMessagesLoading(false);
     }
   };
 
   // ===============================
-  // LOAD ORDERS + PRODUCTS + MESSAGES
+  // LOAD EVERYTHING
   // ===============================
+
   useEffect(() => {
     fetchOrders();
     fetchProducts();
@@ -122,6 +123,7 @@ function Admin() {
   // ===============================
   // ADD PRODUCT
   // ===============================
+
   const addProduct = async (e) => {
     e.preventDefault();
 
@@ -147,15 +149,19 @@ function Admin() {
 
       const data = await response.json();
 
+      console.log("ADD PRODUCT RESPONSE:", data);
+
       if (data.success) {
         alert("Product added successfully! 🎉");
 
+        // Clear form
         setProductName("");
         setCategory("");
         setPrice("");
         setDescription("");
         setImage("");
 
+        // Refresh product list
         fetchProducts();
       } else {
         alert(data.message || "Failed to add product.");
@@ -169,6 +175,7 @@ function Admin() {
   // ===============================
   // DELETE PRODUCT
   // ===============================
+
   const deleteProduct = async (productId, productName) => {
     const confirmDelete = window.confirm(
       `Are you sure you want to delete "${productName}"?`
@@ -186,10 +193,12 @@ function Admin() {
 
       const data = await response.json();
 
+      console.log("DELETE PRODUCT RESPONSE:", data);
+
       if (data.success) {
         setProducts((currentProducts) =>
           currentProducts.filter(
-            (product) => String(product._id) !== String(productId)
+            (product) => product._id !== productId
           )
         );
 
@@ -199,13 +208,14 @@ function Admin() {
       }
     } catch (error) {
       console.error("Delete Product Error:", error);
-      alert("Server error. Please try again.");
+      alert("Server error.");
     }
   };
 
   // ===============================
   // UPDATE ORDER STATUS
   // ===============================
+
   const updateStatus = async (orderId, newStatus) => {
     try {
       const response = await fetch(
@@ -223,10 +233,12 @@ function Admin() {
 
       const data = await response.json();
 
+      console.log("STATUS RESPONSE:", data);
+
       if (data.success) {
         setOrders((currentOrders) =>
           currentOrders.map((order) =>
-            String(order._id) === String(orderId)
+            order._id === orderId
               ? {
                   ...order,
                   status: newStatus,
@@ -234,8 +246,6 @@ function Admin() {
               : order
           )
         );
-
-        alert("Order status updated successfully!");
       } else {
         alert(data.message || "Failed to update status.");
       }
@@ -248,6 +258,7 @@ function Admin() {
   // ===============================
   // DELETE ORDER
   // ===============================
+
   const deleteOrder = async (orderId) => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this order?"
@@ -265,10 +276,12 @@ function Admin() {
 
       const data = await response.json();
 
+      console.log("DELETE ORDER RESPONSE:", data);
+
       if (data.success) {
         setOrders((currentOrders) =>
           currentOrders.filter(
-            (order) => String(order._id) !== String(orderId)
+            (order) => order._id !== orderId
           )
         );
 
@@ -283,23 +296,12 @@ function Admin() {
   };
 
   // ===============================
-  // REFRESH ORDERS
+  // REFRESH ALL
   // ===============================
-  const handleRefresh = () => {
+
+  const refreshAll = () => {
     fetchOrders();
-  };
-
-  // ===============================
-  // REFRESH PRODUCTS
-  // ===============================
-  const handleProductRefresh = () => {
     fetchProducts();
-  };
-
-  // ===============================
-  // REFRESH MESSAGES
-  // ===============================
-  const handleMessageRefresh = () => {
     fetchMessages();
   };
 
@@ -307,13 +309,16 @@ function Admin() {
     <section className="admin-page">
       <h1>Admin Panel</h1>
 
-      <p>Manage Products, Orders & Customer Messages</p>
+      <p>
+        Manage Products & Orders & Customer Messages
+      </p>
 
       <div className="admin-container">
 
         {/* ===============================
             ADD PRODUCT
         =============================== */}
+
         <div className="product-form">
           <h2>Add New Product</h2>
 
@@ -323,36 +328,46 @@ function Admin() {
               type="text"
               placeholder="Product Name"
               value={productName}
-              onChange={(e) => setProductName(e.target.value)}
+              onChange={(e) =>
+                setProductName(e.target.value)
+              }
             />
 
             <input
               type="text"
               placeholder="Category"
               value={category}
-              onChange={(e) => setCategory(e.target.value)}
+              onChange={(e) =>
+                setCategory(e.target.value)
+              }
             />
 
             <input
               type="number"
               placeholder="Price"
               value={price}
-              onChange={(e) => setPrice(e.target.value)}
+              onChange={(e) =>
+                setPrice(e.target.value)
+              }
             />
 
             <input
               type="text"
               placeholder="Image URL (optional)"
               value={image}
-              onChange={(e) => setImage(e.target.value)}
+              onChange={(e) =>
+                setImage(e.target.value)
+              }
             />
 
             <textarea
               placeholder="Product Description"
               rows="5"
               value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
+              onChange={(e) =>
+                setDescription(e.target.value)
+              }
+            ></textarea>
 
             <button type="submit">
               Add Product
@@ -364,31 +379,10 @@ function Admin() {
         {/* ===============================
             PRODUCTS
         =============================== */}
+
         <div className="product-list">
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "20px",
-            }}
-          >
-            <h2>Products</h2>
-
-            <button
-              type="button"
-              onClick={handleProductRefresh}
-              style={{
-                padding: "10px 18px",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              🔄 Refresh Products
-            </button>
-          </div>
+          <h2>Products</h2>
 
           {productsLoading ? (
             <p>Loading products...</p>
@@ -412,7 +406,6 @@ function Admin() {
                 <tbody>
 
                   {products.map((product) => (
-
                     <tr key={product._id}>
 
                       <td>
@@ -422,14 +415,14 @@ function Admin() {
                       </td>
 
                       <td>
-                        {product.category}
+                        {product.category || "N/A"}
                       </td>
 
                       <td>
                         <strong>
                           PKR{" "}
                           {Number(
-                            product.price
+                            product.price || 0
                           ).toLocaleString()}
                         </strong>
                       </td>
@@ -439,7 +432,6 @@ function Admin() {
                       </td>
 
                       <td>
-
                         <button
                           type="button"
                           className="delete-order-btn"
@@ -448,6 +440,182 @@ function Admin() {
                               product._id,
                               product.name
                             )
+                          }
+                        >
+                          Delete
+                        </button>
+                      </td>
+
+                    </tr>
+                  ))}
+
+                </tbody>
+
+              </table>
+
+            </div>
+          )}
+
+        </div>
+
+        {/* ===============================
+            CUSTOMER ORDERS
+        =============================== */}
+
+        <div className="product-list">
+
+          <h2>Customer Orders</h2>
+
+          {loading ? (
+            <p>Loading orders...</p>
+          ) : orders.length === 0 ? (
+            <p>No orders placed yet.</p>
+          ) : (
+            <div className="orders-table-wrapper">
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Customer</th>
+                    <th>Products</th>
+                    <th>Total</th>
+                    <th>Phone</th>
+                    <th>Address</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+
+                  {orders.map((order) => (
+
+                    <tr key={order._id}>
+
+                      {/* CUSTOMER */}
+
+                      <td>
+
+                        <strong>
+                          {order.customerName ||
+                            order.name ||
+                            "Customer"}
+                        </strong>
+
+                        <br />
+
+                        <small>
+                          {order.email ||
+                            order.customerEmail ||
+                            "No email"}
+                        </small>
+
+                      </td>
+
+                      {/* PRODUCTS */}
+
+                      <td>
+
+                        {(
+                          order.items ||
+                          order.products ||
+                          []
+                        ).map((item, index) => (
+
+                          <div key={index}>
+                            {item.name || "Product"} ×{" "}
+                            {item.quantity || 1}
+                          </div>
+
+                        ))}
+
+                      </td>
+
+                      {/* TOTAL */}
+
+                      <td>
+                        PKR{" "}
+                        {Number(
+                          order.total ||
+                            order.totalPrice ||
+                            order.amount ||
+                            0
+                        ).toLocaleString()}
+                      </td>
+
+                      {/* PHONE */}
+
+                      <td>
+                        {order.phone || "N/A"}
+                      </td>
+
+                      {/* ADDRESS */}
+
+                      <td>
+                        {order.address || "N/A"}
+                      </td>
+
+                      {/* DATE */}
+
+                      <td>
+                        {order.createdAt
+                          ? new Date(
+                              order.createdAt
+                            ).toLocaleDateString()
+                          : "N/A"}
+                      </td>
+
+                      {/* STATUS */}
+
+                      <td>
+
+                        <select
+                          value={
+                            order.status || "Pending"
+                          }
+                          onChange={(e) =>
+                            updateStatus(
+                              order._id,
+                              e.target.value
+                            )
+                          }
+                        >
+
+                          <option value="Pending">
+                            Pending
+                          </option>
+
+                          <option value="Processing">
+                            Processing
+                          </option>
+
+                          <option value="Shipped">
+                            Shipped
+                          </option>
+
+                          <option value="Delivered">
+                            Delivered
+                          </option>
+
+                          <option value="Cancelled">
+                            Cancelled
+                          </option>
+
+                        </select>
+
+                      </td>
+
+                      {/* DELETE */}
+
+                      <td>
+
+                        <button
+                          type="button"
+                          className="delete-order-btn"
+                          onClick={() =>
+                            deleteOrder(order._id)
                           }
                         >
                           Delete
@@ -469,300 +637,17 @@ function Admin() {
         </div>
 
         {/* ===============================
-            CUSTOMER ORDERS
-        =============================== */}
-        <div className="product-list">
-
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "20px",
-            }}
-          >
-            <h2>Customer Orders</h2>
-
-            <button
-              type="button"
-              onClick={handleRefresh}
-              style={{
-                padding: "10px 18px",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              🔄 Refresh Orders
-            </button>
-          </div>
-
-          {loading ? (
-            <p>Loading orders...</p>
-          ) : orders.length === 0 ? (
-            <div>
-              <p>No orders placed yet.</p>
-
-              <button
-                type="button"
-                onClick={handleRefresh}
-                style={{
-                  marginTop: "15px",
-                  padding: "10px 18px",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Check Again
-              </button>
-            </div>
-          ) : (
-            <div className="orders-table-wrapper">
-
-              <table>
-
-                <thead>
-                  <tr>
-                    <th>Order ID</th>
-                    <th>Customer</th>
-                    <th>Products</th>
-                    <th>Total</th>
-                    <th>Phone</th>
-                    <th>Address</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-
-                  {orders.map((order, index) => {
-
-                    const orderId =
-                      order._id || order.id || index + 1;
-
-                    const customerName =
-                      order.customerName ||
-                      order.name ||
-                      order.customer?.name ||
-                      "Customer";
-
-                    const email =
-                      order.email ||
-                      order.customerEmail ||
-                      order.customer?.email ||
-                      "No email";
-
-                    const phone =
-                      order.phone ||
-                      order.customer?.phone ||
-                      "N/A";
-
-                    const address =
-                      order.address ||
-                      order.customer?.address ||
-                      "N/A";
-
-                    const items =
-                      order.items ||
-                      order.products ||
-                      [];
-
-                    const total =
-                      order.total ||
-                      order.totalPrice ||
-                      order.amount ||
-                      0;
-
-                    const status =
-                      order.status || "Pending";
-
-                    return (
-                      <tr key={String(orderId)}>
-
-                        <td>
-                          <strong>
-                            #{String(orderId).slice(-8)}
-                          </strong>
-                        </td>
-
-                        <td>
-                          <strong>
-                            {customerName}
-                          </strong>
-
-                          <br />
-
-                          <small>
-                            {email}
-                          </small>
-                        </td>
-
-                        <td>
-                          {items.length > 0 ? (
-                            items.map(
-                              (item, itemIndex) => (
-                                <div
-                                  key={itemIndex}
-                                  style={{
-                                    marginBottom: "5px",
-                                  }}
-                                >
-                                  {item.name || "Product"}{" "}
-                                  ×{" "}
-                                  {item.quantity || 1}
-                                </div>
-                              )
-                            )
-                          ) : (
-                            <span>
-                              No product details
-                            </span>
-                          )}
-                        </td>
-
-                        <td>
-                          <strong>
-                            PKR{" "}
-                            {Number(
-                              total
-                            ).toLocaleString()}
-                          </strong>
-                        </td>
-
-                        <td>
-                          {phone}
-                        </td>
-
-                        <td>
-                          {address}
-                        </td>
-
-                        <td>
-                          {order.createdAt
-                            ? new Date(
-                                order.createdAt
-                              ).toLocaleString()
-                            : order.date
-                            ? order.date
-                            : "N/A"}
-                        </td>
-
-                        <td>
-
-                          <select
-                            value={status}
-                            onChange={(e) =>
-                              updateStatus(
-                                orderId,
-                                e.target.value
-                              )
-                            }
-                          >
-
-                            <option value="Pending">
-                              Pending
-                            </option>
-
-                            <option value="Processing">
-                              Processing
-                            </option>
-
-                            <option value="Shipped">
-                              Shipped
-                            </option>
-
-                            <option value="Delivered">
-                              Delivered
-                            </option>
-
-                            <option value="Cancelled">
-                              Cancelled
-                            </option>
-
-                          </select>
-
-                        </td>
-
-                        <td>
-
-                          <button
-                            type="button"
-                            className="delete-order-btn"
-                            onClick={() =>
-                              deleteOrder(orderId)
-                            }
-                          >
-                            Delete
-                          </button>
-
-                        </td>
-
-                      </tr>
-                    );
-                  })}
-
-                </tbody>
-
-              </table>
-
-            </div>
-          )}
-
-        </div>
-
-        {/* ===============================
             CUSTOMER MESSAGES
         =============================== */}
+
         <div className="product-list">
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "20px",
-            }}
-          >
-            <h2>Customer Messages</h2>
+          <h2>Customer Messages</h2>
 
-            <button
-              type="button"
-              onClick={handleMessageRefresh}
-              style={{
-                padding: "10px 18px",
-                border: "none",
-                borderRadius: "8px",
-                cursor: "pointer",
-              }}
-            >
-              🔄 Refresh Messages
-            </button>
-          </div>
-
-          {/* MESSAGE LOADING */}
           {messagesLoading ? (
-            <p>Loading messages...</p>
+            <p>Loading customer messages...</p>
           ) : messages.length === 0 ? (
-            <div>
-              <p>No customer messages yet.</p>
-
-              <button
-                type="button"
-                onClick={handleMessageRefresh}
-                style={{
-                  marginTop: "15px",
-                  padding: "10px 18px",
-                  border: "none",
-                  borderRadius: "8px",
-                  cursor: "pointer",
-                }}
-              >
-                Check Again
-              </button>
-            </div>
+            <p>No customer messages yet.</p>
           ) : (
             <div className="orders-table-wrapper">
 
@@ -772,7 +657,6 @@ function Admin() {
                   <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Phone</th>
                     <th>Message</th>
                     <th>Date</th>
                   </tr>
@@ -780,38 +664,37 @@ function Admin() {
 
                 <tbody>
 
-                  {messages.map((contact) => (
+                  {messages.map((message, index) => (
 
-                    <tr key={contact._id}>
+                    <tr
+                      key={
+                        message._id || index
+                      }
+                    >
 
-                      {/* NAME */}
                       <td>
                         <strong>
-                          {contact.name}
+                          {message.name ||
+                            message.customerName ||
+                            "Customer"}
                         </strong>
                       </td>
 
-                      {/* EMAIL */}
                       <td>
-                        {contact.email}
+                        {message.email ||
+                          "No email"}
                       </td>
 
-                      {/* PHONE */}
                       <td>
-                        {contact.phone || "N/A"}
+                        {message.message ||
+                          "No message"}
                       </td>
 
-                      {/* MESSAGE */}
                       <td>
-                        {contact.message}
-                      </td>
-
-                      {/* DATE */}
-                      <td>
-                        {contact.createdAt
+                        {message.createdAt
                           ? new Date(
-                              contact.createdAt
-                            ).toLocaleString()
+                              message.createdAt
+                            ).toLocaleDateString()
                           : "N/A"}
                       </td>
 
@@ -825,6 +708,32 @@ function Admin() {
 
             </div>
           )}
+
+        </div>
+
+        {/* ===============================
+            REFRESH
+        =============================== */}
+
+        <div className="product-list">
+
+          <h2>Admin Data</h2>
+
+          <button
+            type="button"
+            onClick={refreshAll}
+            style={{
+              padding: "12px 20px",
+              border: "none",
+              borderRadius: "8px",
+              background: "#ff6b00",
+              color: "white",
+              cursor: "pointer",
+              fontWeight: "bold",
+            }}
+          >
+            🔄 Refresh Data
+          </button>
 
         </div>
 

@@ -23,21 +23,29 @@ function Checkout() {
 
   const [loading, setLoading] = useState(false);
 
+  // ==========================================
+  // PRODUCTION BACKEND
+  // ==========================================
+  const API_URL = "https://server-gilt-phi-18.vercel.app";
+
+  // ==========================================
+  // TOTAL
+  // ==========================================
   const total = cart.reduce(
     (sum, item) =>
       sum + Number(item.price) * (item.quantity || 1),
     0
   );
 
-  // PRODUCTION BACKEND
-  const API_URL = "https://server-gilt-phi-18.vercel.app";
-
+  // ==========================================
+  // FORM CHANGE
+  // ==========================================
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     let newValue = value;
 
-    // NAME: only letters and spaces
+    // NAME
     if (name === "customerName") {
       newValue = value.replace(/[^A-Za-z\s]/g, "");
 
@@ -47,7 +55,7 @@ function Checkout() {
           customerName:
             "Invalid name. Please use letters only.",
         }));
-      } else if (newValue.trim() !== "") {
+      } else {
         setErrors((prev) => ({
           ...prev,
           customerName: "",
@@ -55,7 +63,7 @@ function Checkout() {
       }
     }
 
-    // PHONE: numbers, spaces, +, -, brackets
+    // PHONE
     if (name === "phone") {
       newValue = value.replace(/[^0-9+\-\s()]/g, "");
 
@@ -64,7 +72,7 @@ function Checkout() {
           ...prev,
           phone: "Invalid phone number.",
         }));
-      } else if (newValue.trim() !== "") {
+      } else {
         setErrors((prev) => ({
           ...prev,
           phone: "",
@@ -77,8 +85,10 @@ function Checkout() {
       [name]: newValue,
     }));
 
-    // Clear other field errors
-    if (name !== "customerName" && name !== "phone") {
+    if (
+      name !== "customerName" &&
+      name !== "phone"
+    ) {
       setErrors((prev) => ({
         ...prev,
         [name]: "",
@@ -86,12 +96,16 @@ function Checkout() {
     }
   };
 
+  // ==========================================
+  // VALIDATION
+  // ==========================================
   const validateForm = () => {
     const newErrors = {};
 
-    // Name validation
+    // NAME
     if (!formData.customerName.trim()) {
-      newErrors.customerName = "Full name is required.";
+      newErrors.customerName =
+        "Full name is required.";
     } else if (
       !/^[A-Za-z]+(?:\s+[A-Za-z]+)*$/.test(
         formData.customerName.trim()
@@ -101,9 +115,10 @@ function Checkout() {
         "Invalid name. Please use letters only.";
     }
 
-    // Email validation
+    // EMAIL
     if (!formData.email.trim()) {
-      newErrors.email = "Email address is required.";
+      newErrors.email =
+        "Email address is required.";
     } else if (
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
         formData.email.trim()
@@ -113,9 +128,10 @@ function Checkout() {
         "Please enter a valid email address.";
     }
 
-    // Phone validation
+    // PHONE
     if (!formData.phone.trim()) {
-      newErrors.phone = "Phone number is required.";
+      newErrors.phone =
+        "Phone number is required.";
     } else if (
       !/^[0-9+\-\s()]{7,20}$/.test(
         formData.phone.trim()
@@ -125,7 +141,7 @@ function Checkout() {
         "Please enter a valid phone number.";
     }
 
-    // Address validation
+    // ADDRESS
     if (!formData.address.trim()) {
       newErrors.address =
         "Delivery address is required.";
@@ -136,14 +152,19 @@ function Checkout() {
     return Object.keys(newErrors).length === 0;
   };
 
+  // ==========================================
+  // PLACE ORDER
+  // ==========================================
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Empty cart check
     if (cart.length === 0) {
       alert("Your cart is empty!");
       return;
     }
 
+    // Form validation
     if (!validateForm()) {
       return;
     }
@@ -152,24 +173,42 @@ function Checkout() {
       setLoading(true);
 
       const orderData = {
-        customerName: formData.customerName.trim(),
-        email: formData.email.trim(),
-        phone: formData.phone.trim(),
-        address: formData.address.trim(),
+        customerName:
+          formData.customerName.trim(),
+
+        email:
+          formData.email.trim(),
+
+        phone:
+          formData.phone.trim(),
+
+        address:
+          formData.address.trim(),
+
         items: cart,
+
         total,
       };
 
-      console.log("Sending order:", orderData);
-      console.log("Backend URL:", API_URL);
+      console.log(
+        "Sending order:",
+        orderData
+      );
+
+      console.log(
+        "Backend URL:",
+        API_URL
+      );
 
       const response = await fetch(
         `${API_URL}/api/orders`,
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify(orderData),
         }
       );
@@ -182,22 +221,35 @@ function Checkout() {
         data = {};
       }
 
-      console.log("Server Response:", data);
+      console.log(
+        "Server Response:",
+        data
+      );
 
+      // SERVER ERROR
       if (!response.ok) {
         alert(
           data.message ||
             data.error ||
             "Unable to place order. Please try again."
         );
+
         return;
       }
 
+      // SUCCESS
       if (data.success) {
-        alert("Order placed successfully! 🎉");
+        alert(
+          "Order placed successfully! 🎉"
+        );
 
+        // Clear cart
         clearCart();
-        navigate("/admin");
+
+        // IMPORTANT:
+        // Do NOT send customer to Admin
+        // Send customer back to Home
+        navigate("/");
       } else {
         alert(
           data.message ||
@@ -205,10 +257,13 @@ function Checkout() {
         );
       }
     } catch (error) {
-      console.error("Checkout Error:", error);
+      console.error(
+        "Checkout Error:",
+        error
+      );
 
       alert(
-        "Unable to connect to the server. Please try again."
+        "Unable to connect to the server. Please try again later."
       );
     } finally {
       setLoading(false);
@@ -219,74 +274,117 @@ function Checkout() {
     <div className="checkout-page">
       <div className="checkout-container">
 
+        {/* =====================================
+            PAGE HEADING
+        ===================================== */}
+
         <div className="checkout-heading">
           <h1>Checkout</h1>
 
           <div className="breadcrumb">
-            <span onClick={() => navigate("/")}>
+            <span
+              onClick={() =>
+                navigate("/")
+              }
+            >
               Home
             </span>
+
             <b>›</b>
 
-            <span onClick={() => navigate("/cart")}>
+            <span
+              onClick={() =>
+                navigate("/cart")
+              }
+            >
               Cart
             </span>
+
             <b>›</b>
 
-            <strong>Checkout</strong>
+            <strong>
+              Checkout
+            </strong>
           </div>
         </div>
 
+        {/* =====================================
+            EMPTY CART
+        ===================================== */}
+
         {cart.length === 0 ? (
           <div className="empty-checkout">
-            <div className="empty-icon">🛒</div>
 
-            <h2>Your Cart is Empty</h2>
+            <div className="empty-icon">
+              🛒
+            </div>
+
+            <h2>
+              Your Cart is Empty
+            </h2>
 
             <p>
-              Add some products before proceeding to
-              checkout.
+              Add some products before
+              proceeding to checkout.
             </p>
 
             <button
               className="orange-btn"
-              onClick={() => navigate("/products")}
+              onClick={() =>
+                navigate("/products")
+              }
             >
               Browse Products
             </button>
+
           </div>
         ) : (
+
           <div className="checkout-grid">
 
-            {/* LEFT SIDE */}
+            {/* =================================
+                LEFT SIDE
+            ================================= */}
+
             <div className="checkout-left">
 
               <div className="checkout-card">
 
                 <div className="card-heading">
+
                   <div className="heading-icon">
                     👤
                   </div>
 
                   <div>
-                    <h2>Shipping Information</h2>
+                    <h2>
+                      Shipping Information
+                    </h2>
 
                     <p>
-                      Please enter your details to
-                      place your order
+                      Please enter your
+                      details to place
+                      your order
                     </p>
                   </div>
+
                 </div>
 
-                <form onSubmit={handleSubmit}>
+                <form
+                  onSubmit={handleSubmit}
+                >
 
                   {/* NAME + EMAIL */}
+
                   <div className="form-row">
 
                     {/* NAME */}
+
                     <div className="form-group">
+
                       <label>
-                        Full Name <span>*</span>
+                        Full Name{" "}
+                        <span>*</span>
                       </label>
 
                       <div
@@ -296,29 +394,42 @@ function Checkout() {
                             : ""
                         }`}
                       >
+
                         <span>👤</span>
 
                         <input
                           type="text"
                           name="customerName"
                           placeholder="Enter your full name"
-                          value={formData.customerName}
-                          onChange={handleChange}
+                          value={
+                            formData.customerName
+                          }
+                          onChange={
+                            handleChange
+                          }
                           required
                         />
+
                       </div>
 
                       {errors.customerName && (
                         <p className="validation-error">
-                          ⚠ {errors.customerName}
+                          ⚠{" "}
+                          {
+                            errors.customerName
+                          }
                         </p>
                       )}
+
                     </div>
 
                     {/* EMAIL */}
+
                     <div className="form-group">
+
                       <label>
-                        Email Address <span>*</span>
+                        Email Address{" "}
+                        <span>*</span>
                       </label>
 
                       <div
@@ -328,30 +439,42 @@ function Checkout() {
                             : ""
                         }`}
                       >
+
                         <span>✉</span>
 
                         <input
                           type="email"
                           name="email"
                           placeholder="Enter your email address"
-                          value={formData.email}
-                          onChange={handleChange}
+                          value={
+                            formData.email
+                          }
+                          onChange={
+                            handleChange
+                          }
                           required
                         />
+
                       </div>
 
                       {errors.email && (
                         <p className="validation-error">
-                          ⚠ {errors.email}
+                          ⚠{" "}
+                          {errors.email}
                         </p>
                       )}
+
                     </div>
+
                   </div>
 
                   {/* PHONE */}
+
                   <div className="form-group">
+
                     <label>
-                      Phone Number <span>*</span>
+                      Phone Number{" "}
+                      <span>*</span>
                     </label>
 
                     <div
@@ -361,29 +484,40 @@ function Checkout() {
                           : ""
                       }`}
                     >
+
                       <span>☎</span>
 
                       <input
                         type="text"
                         name="phone"
                         placeholder="Enter your phone number"
-                        value={formData.phone}
-                        onChange={handleChange}
+                        value={
+                          formData.phone
+                        }
+                        onChange={
+                          handleChange
+                        }
                         required
                       />
+
                     </div>
 
                     {errors.phone && (
                       <p className="validation-error">
-                        ⚠ {errors.phone}
+                        ⚠{" "}
+                        {errors.phone}
                       </p>
                     )}
+
                   </div>
 
                   {/* ADDRESS */}
+
                   <div className="form-group">
+
                     <label>
-                      Delivery Address <span>*</span>
+                      Delivery Address{" "}
+                      <span>*</span>
                     </label>
 
                     <div
@@ -393,26 +527,35 @@ function Checkout() {
                           : ""
                       }`}
                     >
+
                       <span>📍</span>
 
                       <textarea
                         name="address"
                         placeholder="Enter your complete delivery address"
-                        value={formData.address}
-                        onChange={handleChange}
+                        value={
+                          formData.address
+                        }
+                        onChange={
+                          handleChange
+                        }
                         rows="5"
                         required
                       />
+
                     </div>
 
                     {errors.address && (
                       <p className="validation-error">
-                        ⚠ {errors.address}
+                        ⚠{" "}
+                        {errors.address}
                       </p>
                     )}
+
                   </div>
 
                   {/* PLACE ORDER */}
+
                   <button
                     type="submit"
                     className="place-order-btn"
@@ -424,199 +567,298 @@ function Checkout() {
                   </button>
 
                 </form>
+
               </div>
 
-              {/* SECURITY BOX */}
+              {/* SECURITY */}
+
               <div className="security-box">
+
                 <div className="security-icon">
                   🛡
                 </div>
 
                 <div>
+
                   <h3>
-                    Your security is our priority
+                    Your security is our
+                    priority
                   </h3>
 
                   <p>
-                    Your information is safe and secure
-                    with us. We never share your details.
+                    Your information is
+                    safe and secure with
+                    us. We never share
+                    your details.
                   </p>
+
                 </div>
+
               </div>
 
             </div>
 
-            {/* RIGHT SIDE */}
+            {/* =================================
+                RIGHT SIDE
+            ================================= */}
+
             <div className="checkout-right">
 
               <div className="order-card">
 
                 <div className="card-heading">
+
                   <div className="heading-icon">
                     🛍
                   </div>
 
                   <div>
-                    <h2>Order Summary</h2>
+
+                    <h2>
+                      Order Summary
+                    </h2>
 
                     <p>
                       {cart.length} item
-                      {cart.length > 1 ? "s" : ""}
-                      {" "}in your cart
+                      {cart.length > 1
+                        ? "s"
+                        : ""}{" "}
+                      in your cart
                     </p>
+
                   </div>
+
                 </div>
 
                 {/* PRODUCTS */}
+
                 <div className="order-items">
 
-                  {cart.map((item, index) => (
-                    <div
-                      className="order-item"
-                      key={index}
-                    >
+                  {cart.map(
+                    (item, index) => (
 
-                      <div className="product-image">
-                        {item.image ? (
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                          />
-                        ) : item.img ? (
-                          <img
-                            src={item.img}
-                            alt={item.name}
-                          />
-                        ) : (
-                          <span>📦</span>
-                        )}
-                      </div>
+                      <div
+                        className="order-item"
+                        key={index}
+                      >
 
-                      <div className="product-info">
-                        <h3>{item.name}</h3>
+                        <div className="product-image">
 
-                        <p>
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              alt={item.name}
+                            />
+                          ) : item.img ? (
+                            <img
+                              src={item.img}
+                              alt={item.name}
+                            />
+                          ) : (
+                            <span>
+                              📦
+                            </span>
+                          )}
+
+                        </div>
+
+                        <div className="product-info">
+
+                          <h3>
+                            {item.name}
+                          </h3>
+
+                          <p>
+                            $
+                            {Number(
+                              item.price
+                            ).toFixed(2)}
+                            {" × "}
+                            {item.quantity ||
+                              1}
+                          </p>
+
+                        </div>
+
+                        <strong className="item-price">
+
                           $
-                          {Number(item.price).toFixed(2)}
-                          {" × "}
-                          {item.quantity || 1}
-                        </p>
+                          {(
+                            Number(
+                              item.price
+                            ) *
+                            (item.quantity ||
+                              1)
+                          ).toFixed(2)}
+
+                        </strong>
+
                       </div>
 
-                      <strong className="item-price">
-                        $
-                        {(
-                          Number(item.price) *
-                          (item.quantity || 1)
-                        ).toFixed(2)}
-                      </strong>
-
-                    </div>
-                  ))}
+                    )
+                  )}
 
                 </div>
 
                 {/* TOTALS */}
+
                 <div className="price-details">
 
                   <div>
-                    <span>Subtotal</span>
+                    <span>
+                      Subtotal
+                    </span>
+
                     <strong>
-                      ${total.toFixed(2)}
+                      $
+                      {total.toFixed(
+                        2
+                      )}
                     </strong>
                   </div>
 
                   <div>
-                    <span>Shipping</span>
+
+                    <span>
+                      Shipping
+                    </span>
+
                     <strong className="free">
                       Free
                     </strong>
+
                   </div>
 
                   <div className="total-row">
-                    <span>Total</span>
+
+                    <span>
+                      Total
+                    </span>
+
                     <strong>
-                      ${total.toFixed(2)}
+                      $
+                      {total.toFixed(
+                        2
+                      )}
                     </strong>
+
                   </div>
 
                 </div>
 
                 {/* SECURE CHECKOUT */}
+
                 <div className="secure-checkout">
+
                   <div className="secure-icon">
                     🛡
                   </div>
 
                   <div>
-                    <h3>Secure Checkout</h3>
+
+                    <h3>
+                      Secure Checkout
+                    </h3>
 
                     <p>
-                      Your information is protected
-                      and secure.
+                      Your information
+                      is protected and
+                      secure.
                     </p>
+
                   </div>
+
                 </div>
 
               </div>
 
             </div>
+
           </div>
+
         )}
 
-        {/* FEATURES */}
+        {/* =====================================
+            FEATURES
+        ===================================== */}
+
         {cart.length > 0 && (
+
           <div className="checkout-features">
 
             <div className="feature">
+
               <span>🚚</span>
 
               <div>
-                <h3>Fast Delivery</h3>
+                <h3>
+                  Fast Delivery
+                </h3>
+
                 <p>
-                  Get your products quickly
+                  Get your products
+                  quickly
                 </p>
               </div>
+
             </div>
 
             <div className="feature">
+
               <span>🛡</span>
 
               <div>
-                <h3>Secure Payment</h3>
+                <h3>
+                  Secure Payment
+                </h3>
+
                 <p>
-                  100% secure transactions
+                  100% secure
+                  transactions
                 </p>
               </div>
+
             </div>
 
             <div className="feature">
+
               <span>🎧</span>
 
               <div>
-                <h3>24/7 Support</h3>
+                <h3>
+                  24/7 Support
+                </h3>
+
                 <p>
                   We're here to help
                 </p>
               </div>
+
             </div>
 
             <div className="feature">
+
               <span>↩</span>
 
               <div>
-                <h3>Easy Returns</h3>
+                <h3>
+                  Easy Returns
+                </h3>
+
                 <p>
                   Hassle-free returns
                 </p>
               </div>
+
             </div>
 
           </div>
+
         )}
 
         <div className="checkout-footer">
-          © 2025 AGNI Industry. All rights reserved.
+          © 2025 AGNI Industry.
+          All rights reserved.
         </div>
 
       </div>
@@ -625,3 +867,4 @@ function Checkout() {
 }
 
 export default Checkout;
+
