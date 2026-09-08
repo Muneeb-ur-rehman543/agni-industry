@@ -29,8 +29,8 @@ function Checkout() {
     0
   );
 
-  // LOCAL BACKEND
-  const API_URL = "http://localhost:5000";
+  // PRODUCTION BACKEND
+  const API_URL = "https://server-gilt-phi-18.vercel.app";
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -208,7 +208,7 @@ function Checkout() {
       console.error("Checkout Error:", error);
 
       alert(
-        "Unable to connect to the server. Please make sure the backend is running on http://localhost:5000"
+        "Unable to connect to the server. Please try again."
       );
     } finally {
       setLoading(false);
@@ -561,7 +561,6 @@ function Checkout() {
               </div>
 
             </div>
-
           </div>
         )}
 
